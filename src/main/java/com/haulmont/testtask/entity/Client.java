@@ -1,17 +1,15 @@
 package com.haulmont.testtask.entity;
 
-/**
- * Created by Антон on 28.02.2017.
- */
+
 public class Client {
 
     private String firstName;
     private String surname;
     private String patronymic;
-    private double number;
-    private float id;
+    private String number;
+    private long id;
 
-    public Client(String newFirstName, String newSurname, String newPatronymic, double newNumber){
+    public Client(String newFirstName, String newSurname, String newPatronymic, String newNumber){
         this.firstName = newFirstName;
         this.surname = newSurname;
         this.patronymic = newPatronymic;
@@ -30,11 +28,11 @@ public class Client {
         return this.patronymic;
     }
 
-    public double getNumber(){
+    public String getNumber(){
         return this.number;
     }
 
-    public float getId(){
+    public long getId(){
         return this.id;
     }
 
@@ -50,11 +48,11 @@ public class Client {
         this.patronymic = newPatronymic;
     }
 
-    public void setNumber(double newNumber){
+    public void setNumber(String newNumber){
         this.number = newNumber;
     }
 
-    public void setId(float newId){
+    public void setId(long newId){
         this.id = newId;
     }
 }

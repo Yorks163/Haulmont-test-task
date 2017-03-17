@@ -6,14 +6,14 @@ package com.haulmont.testtask.entity;
 public class Order {
 
     private String description;
-    private float clientID;
+    private long clientID;
     private int dataOfCreation;
     private int dataOfComplrtion;
     private double price;
     private enum StatusDescription {PLANNED, MADE, ADOPTED_BY_THE_CLIENT}
     private StatusDescription statusDescription;
 
-    public Order(String newDescription, float newClientID, int newDataOfCreation, int newDataOfComplrtionm, double newPrice){
+    public Order(String newDescription, long newClientID, int newDataOfCreation, int newDataOfComplrtionm, double newPrice){
         this.description = newDescription;
         this.clientID = newClientID;
         this.dataOfCreation = newDataOfCreation;
@@ -25,7 +25,7 @@ public class Order {
         return this.description;
     }
 
-    public float getClientID(){
+    public long getClientID(){
         return this.clientID;
     }
 
@@ -52,7 +52,7 @@ public class Order {
         this.description = newDescription;
     }
 
-    public void setClientID(float newClientID) {
+    public void setClientID(long newClientID) {
         this.clientID = newClientID;
     }
 

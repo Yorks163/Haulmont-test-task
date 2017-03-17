@@ -1,15 +1,16 @@
 package com.haulmont.testtask;
 
-import com.haulmont.testtask.entity.*;
+import com.haulmont.testtask.DAO.ClientDAO;
 
-/**
- * Created by Антон on 28.02.2017.
- */
 public class Main {
 
     public static void main (String[] args){
 
-        Client client = new Client("Ivan", "Ivanov", "Ivanovich", 890712345);
-        System.out.print(client.getFirstName());
+        ClientDAO clientDAO = new ClientDAO();
+        clientDAO.startServer();
+        clientDAO.addClient();
+        clientDAO.seeTable();
+        clientDAO.closeServer();
+
     }
 }
