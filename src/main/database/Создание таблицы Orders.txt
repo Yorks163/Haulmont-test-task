@@ -1,0 +1,10 @@
+CREATE TABLE orders
+(id BIGINT IDENTITY,
+description VARCHAR(500),
+clientID BIGINT,
+dataofcreation DATE,
+dateofcompletion DATE check (dateofcompletion >= dataofcreation),
+price FLOAT,
+status VARCHAR(50) check (status in ('Запланирован','Выполнен','Принят клиентом')),
+PRIMARY KEY (id),
+FOREIGN KEY (clientID) REFERENCES client(id))
