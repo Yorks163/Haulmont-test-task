@@ -14,7 +14,7 @@ public class Database {
         try {
             Class.forName("org.hsqldb.jdbcDriver");
         } catch (ClassNotFoundException e) {
-            System.err.println("Не удалось загрузить драйвер HSQLDB!");
+            System.err.println("Database massage: Не удалось загрузить драйвер HSQLDB!");
             e.printStackTrace();
             System.exit(1);
         }
@@ -25,9 +25,9 @@ public class Database {
                     "jdbc:hsqldb:file:src/main/database/car_workshop", "SA", "");
 
             statement  = connection.createStatement();
-            System.out.println("База данных подключена");
+            System.out.println("Database massage: База данных подключена");
         } catch (SQLException e) {
-            System.err.println("Не удалось подключиться к базе данных!");
+            System.err.println("Database massage: Не удалось подключиться к базе данных!");
             e.printStackTrace();
             System.exit(2);
         }
@@ -37,10 +37,10 @@ public class Database {
         try {
             String query = "SHUTDOWN";
             statement.execute(query);
-            System.out.println("база данных закрыта");
+            System.out.println("Database massage: База данных закрыта");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("База данных не закрыта!");
+            System.out.println("Database massage: База данных не закрыта!");
         }
     }
 

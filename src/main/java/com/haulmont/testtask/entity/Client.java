@@ -3,17 +3,29 @@ package com.haulmont.testtask.entity;
 
 public class Client {
 
-    private String firstName;
     private String surname;
+    private String firstName;
     private String patronymic;
     private String number;
     private long id;
 
-    public Client(String newFirstName, String newSurname, String newPatronymic, String newNumber){
-        this.firstName = newFirstName;
+    public Client(String newSurname, String newFirstName, String newPatronymic, String newNumber){
         this.surname = newSurname;
+        this.firstName = newFirstName;
         this.patronymic = newPatronymic;
         this.number = newNumber;
+    }
+
+    public Client(){
+
+    }
+
+    public Client (Client client){
+        this.surname = client.getSurname();
+        this.firstName = client.getFirstName();
+        this.patronymic = client.getPatronymic();
+        this.number = client.getNumber();
+        this.id = client.getId();
     }
 
     public String getFirstName(){
