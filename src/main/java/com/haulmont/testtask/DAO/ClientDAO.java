@@ -3,6 +3,8 @@ package com.haulmont.testtask.DAO;
 import com.haulmont.testtask.entity.Client;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientDAO {
 
@@ -95,4 +97,32 @@ public class ClientDAO {
             return client;
         }
     }
+
+    static public List<Client> getAllClient(){
+        try {
+            String query = "SELECT * FROM client";
+            ResultSet resultSet = Database.statement.executeQuery(query);
+
+            List<Client> clients = new ArrayList<>();
+
+            Client client = new Client();
+            while (resultSet.next()) {
+                client.setId(resultSet.getLong(1));
+                client.setSurname(resultSet.getString(2));
+                client.setFirstName(resultSet.getString(3));
+                client.setPatronymic( resultSet.getString(4));
+                client.setNumber(resultSet.getString(5));
+
+                clients.add(new Client(client));
+            }
+
+            return clients;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Database massage: В базе нет клиентов!");
+            List<Client> clients = null;
+            return clients;
+        }
+    }
+
 }

@@ -2,26 +2,47 @@ package com.haulmont.testtask.entity;
 
 import java.sql.Date;
 
-/**
- * Created by Антон on 28.02.2017.
- */
 public class Order {
 
+    private long id;
     private String description;
     private long clientID;
     private Date dataOfCreation;
     private Date dataOfCompletion;
     private double price;
     private StatusDescription statusDescription;
-
     private enum StatusDescription {Запланирован, Выполнен, Принят_клиентом}
 
-    public Order(String newDescription, long newClientID, Date newDataOfCreation, Date newDataOfCompletionm, double newPrice){
+    public Order(long id, String newDescription, long newClientID, Date newDataOfCreation, Date newDataOfCompletion, double newPrice){
+        this.id = id;
         this.description = newDescription;
         this.clientID = newClientID;
         this.dataOfCreation = newDataOfCreation;
-        this.dataOfCompletion = newDataOfCompletionm;
+        this.dataOfCompletion = newDataOfCompletion;
         this.price = newPrice;
+    }
+
+    public Order(Order order){
+        try {
+            this.id = order.getId();
+            this.description = order.getDescription();
+            this.clientID = order.getClientID();
+            this.dataOfCreation = order.getDataOfCreation();
+            this.dataOfCompletion = order.getDataOfCompletion();
+            this.price = order.getPrice();
+            this.statusDescription = StatusDescription.valueOf(order.getStatusDescription());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Exception: Некорректный статус заказа!");
+        }
+
+    }
+
+    public Order(){
+    }
+
+
+    public long getId() {
+        return id;
     }
 
     public String getDescription(){
@@ -36,7 +57,7 @@ public class Order {
         return this.dataOfCreation;
     }
 
-    public Date getDataOfComplrtion(){
+    public Date getDataOfCompletion(){
         return this.dataOfCompletion;
     }
 
@@ -51,6 +72,10 @@ public class Order {
         return this.statusDescription.toString();
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public void setDescription(String newDescription){
         this.description = newDescription;
     }
@@ -63,7 +88,7 @@ public class Order {
         this.dataOfCreation = newDataOfCreation;
     }
 
-    public void setDataOfComplrtion(Date newDataOfCompertion) {
+    public void setDataOfCompletion(Date newDataOfCompertion) {
         this.dataOfCompletion = newDataOfCompertion;
     }
 

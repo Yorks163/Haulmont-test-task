@@ -25,7 +25,6 @@ public class Database {
                     "jdbc:hsqldb:file:src/main/database/car_workshop", "SA", "");
 
             statement  = connection.createStatement();
-            System.out.println("Database massage: База данных подключена");
         } catch (SQLException e) {
             System.err.println("Database massage: Не удалось подключиться к базе данных!");
             e.printStackTrace();
@@ -37,7 +36,6 @@ public class Database {
         try {
             String query = "SHUTDOWN";
             statement.execute(query);
-            System.out.println("Database massage: База данных закрыта");
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Database massage: База данных не закрыта!");
