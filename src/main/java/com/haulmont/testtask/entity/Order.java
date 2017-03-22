@@ -13,13 +13,19 @@ public class Order {
     private StatusDescription statusDescription;
     private enum StatusDescription {Запланирован, Выполнен, Принят_клиентом}
 
-    public Order(long id, String newDescription, long newClientID, Date newDataOfCreation, Date newDataOfCompletion, double newPrice){
-        this.id = id;
+    public Order(String newDescription, long newClientID, Date newDataOfCreation, Date newDataOfCompletion, double newPrice, String statusDescription){
         this.description = newDescription;
         this.clientID = newClientID;
         this.dataOfCreation = newDataOfCreation;
         this.dataOfCompletion = newDataOfCompletion;
         this.price = newPrice;
+        try {
+            if (statusDescription.equals("Принят клиентом"))
+                statusDescription = "Принят_клиентом";
+            this.statusDescription = StatusDescription.valueOf(statusDescription);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Exception: Некорректный статус заказа!");
+        }
     }
 
     public Order(Order order){
@@ -66,10 +72,8 @@ public class Order {
     }
 
     public String getStatusDescription(){
-        /*if (this.statusDescription == StatusDescription.Запланирован) return "Запланирован";
-        else if (this.statusDescription == StatusDescription.Выполнен) return "Выполнен";
-        else return "Принят клиентом";*/
-        return this.statusDescription.toString();
+        if (statusDescription.toString() == "Принят_клиентом") return "Принят клиентом";
+        else return this.statusDescription.toString();
     }
 
     public void setId(long id) {
@@ -98,6 +102,8 @@ public class Order {
 
     public void setStatusDescription(String statusDescription) {
         try {
+            if (statusDescription.equals("Принят клиентом"))
+                statusDescription = "Принят_клиентом";
             this.statusDescription = StatusDescription.valueOf(statusDescription);
         } catch (IllegalArgumentException e) {
             System.out.println("Exception: Некорректный статус заказа!");

@@ -7,8 +7,8 @@ import java.sql.Statement;
 
 public class Database {
 
-    static Connection connection;
-    static Statement  statement;
+    public static Connection connection;
+    public static Statement  statement;
 
     static public void startDatabase(){
         try {
@@ -37,7 +37,6 @@ public class Database {
             String query = "SHUTDOWN";
             statement.execute(query);
         } catch (SQLException e) {
-            e.printStackTrace();
             System.out.println("Database massage: База данных не закрыта!");
         }
     }

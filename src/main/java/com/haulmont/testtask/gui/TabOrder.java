@@ -1,17 +1,32 @@
 package com.haulmont.testtask.gui;
 
+import com.haulmont.testtask.DAO.Database;
 import com.haulmont.testtask.DAO.OrderDAO;
 import com.haulmont.testtask.entity.Order;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
-
+import com.vaadin.ui.themes.ValoTheme;
 import java.sql.Date;
 import java.util.List;
 
-
 public class TabOrder {
-    public HorizontalLayout tabOrder(){
+    public VerticalLayout tabOrder(){
 
+        //Добавляем кнопки
+        HorizontalLayout buttons = new HorizontalLayout();
+
+        Button addOrder = new Button("Добавить");
+        addOrder.setStyleName(ValoTheme.BUTTON_LARGE);
+        Button updateOrder = new Button("Изменить");
+        Button deleteOrder = new Button("Удалить");
+        deleteOrder.setStyleName(ValoTheme.BUTTON_DANGER);
+
+        buttons.addComponent(addOrder);
+        buttons.addComponent(updateOrder);
+        buttons.addComponent(deleteOrder);
+
+        //Создаем таблицу
         Grid grid = new Grid();
         grid.addColumn("ID", Long.class).setWidth(80);
         grid.addColumn("Описание", String.class);
@@ -26,23 +41,25 @@ public class TabOrder {
         grid.setEditorEnabled(false);
 
         //Заполнение таблицы данными из Базы данных
+        Database.startDatabase();
         List<Order> orders = OrderDAO.getAllOrder();
         int index = orders.size();
         for (int i=0; i<index; i++) {
-            grid.addRow(orders.get(i).getId(), orders.get(i).getDescription(), orders.get(i).getClientID(), orders.get(i).getDataOfCreation(),
+            grid.addRow(orders.get(i).getId(), orders.get(i).getDescription(), orders.get(i).getClientID() , orders.get(i).getDataOfCreation(),
                         orders.get(i).getDataOfCompletion(), orders.get(i).getPrice(), orders.get(i).getStatusDescription());
         }
+        Database.closeDatabase();
 
-        HorizontalLayout layout = new HorizontalLayout();
+        //Заполнение таблицы данными из Базы данных
+        addOrder.addClickListener(event -> grid.getUI().getUI().addWindow(new EditOrderTable().addOrder(grid)));
 
-        Button addOrder = new Button("Добавить");
-        addOrder.addClickListener(event -> layout.getUI().getUI().addWindow(new EditOrderTable().addOrder()));
+        updateOrder.addClickListener(event -> {
+            //Проверка, что изменяем выделенную строку
+            if (grid.getSelectedRow() != null)
+                grid.getUI().getUI().addWindow(new EditOrderTable().updateOrder(grid));
+        });
 
-        Button updateOrder = new Button("Изменить");
-        updateOrder.addClickListener(event -> layout.getUI().getUI().addWindow(new EditOrderTable().updateOrder()));
-
-        Button deleteOrder = new Button("Удалить");
-        deleteOrder.addClickListener(event -> layout.getUI().getUI().addWindow(new EditClientTable().addClient()));
+        deleteOrder.addClickListener(event -> new EditOrderTable().deleteOrder(grid));
 
 
         FormLayout filter = new FormLayout();
@@ -79,10 +96,7 @@ public class TabOrder {
         verticalLayout.addComponent(horizontalLayoutTop);
         verticalLayout.addComponent(horizontalLayoutBottom);
 
-
-        layout.addComponent(verticalLayout);
-
-        return  layout;
+        return  verticalLayout;
     }
 
 }

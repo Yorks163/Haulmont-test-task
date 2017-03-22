@@ -1,14 +1,18 @@
 package com.haulmont.testtask.gui;
 
-import com.vaadin.ui.*;
+import com.haulmont.testtask.DAO.ClientDAO;
+import com.haulmont.testtask.DAO.Database;
+import com.haulmont.testtask.DAO.OrderDAO;
+import com.haulmont.testtask.entity.Client;
+import com.haulmont.testtask.entity.Order;
 
+import com.vaadin.ui.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class EditOrderTable {
 
-    public Window addOrder() {
+    public Window addOrder(Grid grid) {
         final Window window = new Window("Добавление нового заказа");
         window.setModal(true);
         window.center();
@@ -17,16 +21,12 @@ public class EditOrderTable {
 
         final FormLayout addOrder = new FormLayout();
         addOrder.setMargin(true);
-
         addOrder.setSizeFull();
 
         final TextField description = new TextField("Описание", "");
         description.setSizeFull();
         description.setRequired(true);
-
-        final TextField clientId = new TextField("ID клиента", "");
-        clientId.setSizeFull();
-        clientId.setRequired(true);
+        description.setMaxLength(500);
 
         final DateField dataOfCreation = new DateField("Дата создания");
         dataOfCreation.setValue(new java.util.Date());
@@ -39,36 +39,63 @@ public class EditOrderTable {
         final TextField price = new TextField("Стоимость", "");
         price.setSizeFull();
 
+        //Панель выбора клиента из существующих
+        List<Long> allClientID = new ArrayList();
+        Database.startDatabase();
+        List<Client> clients = ClientDAO.getAllClient();
+        int index = clients.size();
+        for (int i=0; i<index; i++) {
+            allClientID.add(clients.get(i).getId());
+        }
+        ComboBox clientID = new ComboBox("ID Клиента", allClientID);
+        clientID.setSizeFull();
+        clientID.setRequired(true);
+        clientID.setInputPrompt("Выберите клиента по его ID");
+        clientID.setNullSelectionAllowed(false);
 
-        List<String> status = new ArrayList<>();
-        status.add("Запланирован");
-        status.add("Выполнен");
-        status.add("Принят клиентом");
-        ComboBox nativeSelect = new ComboBox("Статус", status);
-        nativeSelect.setSizeFull();
-        nativeSelect.setRequired(true);
-        nativeSelect.setInputPrompt("Выберите статус");
-        nativeSelect.setNullSelectionAllowed(false);
+        //Панель выбора статуса из трех возможных
+        List<String> allStatus = new ArrayList<>();
+        allStatus.add("Запланирован");
+        allStatus.add("Выполнен");
+        allStatus.add("Принят клиентом");
+        ComboBox status = new ComboBox("Статус", allStatus);
+        status.setSizeFull();
+        status.setRequired(true);
+        status.setInputPrompt("Выберите статус");
+        status.setNullSelectionAllowed(false);
 
-        final Button saveClient = new Button("Добавить");
+        final Button saveOrder = new Button("Добавить");
         final Button cancel = new Button("Отмена");
         HorizontalLayout buttons = new HorizontalLayout();
-        buttons.addComponent(saveClient);
+        buttons.addComponent(saveOrder);
         buttons.addComponent(cancel);
 
+        saveOrder.addClickListener(clickEvent -> {
+            Database.startDatabase();
+            Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
+                                    new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue()), status.getValue().toString() );
+            OrderDAO.addOrder(order);
+            List<Order> orders = OrderDAO.getAllOrder();
+            int size = orders.size();
+            grid.addRow(orders.get(size-1).getId(), orders.get(size-1).getDescription(), orders.get(size-1).getClientID(), orders.get(size-1).getDataOfCreation(),
+                        orders.get(size-1).getDataOfCompletion(), orders.get(size-1).getPrice(), orders.get(size-1).getStatusDescription());
+            Database.closeDatabase();
+            window.close();
+        });
+
         addOrder.addComponent(description);
-        addOrder.addComponent(clientId);
+        addOrder.addComponent(clientID);
         addOrder.addComponent(dataOfCreation);
         addOrder.addComponent(dataOfCompletion);
         addOrder.addComponent(price);
-        addOrder.addComponent(nativeSelect);
+        addOrder.addComponent(status);
         addOrder.addComponent(buttons);
 
         window.setContent(addOrder);
         return window;
     }
 
-    public Window updateOrder() {
+    public Window updateOrder(Grid grid) {
         final Window window = new Window("Изменение заказа");
         window.setModal(true);
         window.center();
@@ -77,55 +104,96 @@ public class EditOrderTable {
 
         final FormLayout addOrder = new FormLayout();
         addOrder.setMargin(true);
-
         addOrder.setSizeFull();
 
-        final TextField description = new TextField("Описание", "");
+        final TextField description = new TextField("Описание", grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").getValue().toString());
         description.setSizeFull();
         description.setRequired(true);
-
-        final TextField clientId = new TextField("ID клиента", "");
-        clientId.setSizeFull();
-        clientId.setRequired(true);
+        description.setMaxLength(500);
 
         final DateField dataOfCreation = new DateField("Дата создания");
-        dataOfCreation.setValue(new java.util.Date());
+        //dataOfCreation.setValue(new java.util.Date(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата создания").getValue().toString()));
         dataOfCreation.setSizeFull();
-        clientId.setRequired(true);
+        dataOfCreation.setRequired(true);
 
         final DateField dataOfCompletion = new DateField("Дата окончания");
+        //dataOfCreation.setValue(new java.util.Date(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата окончания").getValue().toString()));
         dataOfCompletion.setSizeFull();
 
-        final TextField price = new TextField("Стоимость", "");
+        final TextField price = new TextField("Стоимость",  grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Стоимость").getValue().toString());
         price.setSizeFull();
 
+        //Панель выбора клиента из существующих
+        List<Long> allClientID = new ArrayList();
+        Database.startDatabase();
+        List<Client> clients = ClientDAO.getAllClient();
+        int index = clients.size();
+        for (int i=0; i<index; i++) {
+            allClientID.add(clients.get(i).getId());
+        }
+        ComboBox clientID = new ComboBox("ID Клиента", allClientID);
+        clientID.setSizeFull();
+        clientID.setRequired(true);
+        clientID.setValue(Long.parseLong(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID Клиента").getValue().toString()));
+        clientID.setNullSelectionAllowed(false);
 
-        List<String> status = new ArrayList<>();
-        status.add("Запланирован");
-        status.add("Выполнен");
-        status.add("Принят клиентом");
-        ComboBox nativeSelect = new ComboBox("Статус", status);
-        nativeSelect.setSizeFull();
-        nativeSelect.setRequired(true);
-        nativeSelect.setInputPrompt("Выберите статус");
-        nativeSelect.setNullSelectionAllowed(false);
+        //Панель выбора статуса из трех возможных
+        List<String> allStatus = new ArrayList<>();
+        allStatus.add("Запланирован");
+        allStatus.add("Выполнен");
+        allStatus.add("Принят клиентом");
+        ComboBox status = new ComboBox("Статус", allStatus);
+        status.setSizeFull();
+        status.setRequired(true);
+        status.setValue(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Статус").getValue().toString());
+        status.setNullSelectionAllowed(false);
 
-        final Button saveClient = new Button("Изменить");
+        final Button saveOrder = new Button("Добавить");
         final Button cancel = new Button("Отмена");
         HorizontalLayout buttons = new HorizontalLayout();
-        buttons.addComponent(saveClient);
+        buttons.addComponent(saveOrder);
         buttons.addComponent(cancel);
 
+        saveOrder.addClickListener(clickEvent -> {
+            //Database.startDatabase();
+            Long id = (Long) grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID").getValue();
+            Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
+                                    new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue().toString()), status.getValue().toString());
+            order.setId(id);
+            System.out.println(order.getDescription());
+            //ClientDAO.updateClient(client);
+            //Database.closeDatabase();
+
+            //grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Фамилия").setValue(surname.getValue());
+            //grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Имя").setValue(firstName.getValue());
+            //grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Отчество").setValue(patronymic.getValue());
+            //grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Номер телефона").setValue(number.getValue());
+            window.close();
+        });
+
         addOrder.addComponent(description);
-        addOrder.addComponent(clientId);
+        addOrder.addComponent(clientID);
         addOrder.addComponent(dataOfCreation);
         addOrder.addComponent(dataOfCompletion);
         addOrder.addComponent(price);
-        addOrder.addComponent(nativeSelect);
+        addOrder.addComponent(status);
         addOrder.addComponent(buttons);
 
         window.setContent(addOrder);
         return window;
+    }
+
+    public  void deleteOrder(Grid grid){
+        //Проверка, что выбрана строка для удаления
+        if (grid.getSelectedRow() == null) return;
+
+        Long id = (Long) grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID").getValue();
+        Database.startDatabase();
+        OrderDAO.deleteOrder(id);
+        Database.closeDatabase();
+
+        grid.getContainerDataSource().removeItem(grid.getSelectedRow());
+        Notification.show("Удален заказ с ID = "+id.toString());
     }
 
 }

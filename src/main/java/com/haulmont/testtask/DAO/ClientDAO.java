@@ -10,8 +10,10 @@ public class ClientDAO {
 
     static private PreparedStatement preparedStatement;
     static private String addCustomer = "INSERT INTO client (surname, firstName, patronymic, number) VALUES (?,?,?,?)";
-    static private String deleteCustomer = "DELETE FROM client WHERE id= ?";
-    static private String getCustomer = "SELECT * FROM client WHERE id= ?";
+    static private String deleteCustomer = "DELETE FROM client WHERE id = ?";
+    static private String getCustomer = "SELECT * FROM client WHERE id = ?";
+    static private String updateCustomer = "UPDATE client SET SURNAME = ?, FIRSTNAME = ?, PATRONYMIC = ?, NUMBER = ? WHERE id = ?";
+
 
     static public void seeTable(){
         try {
@@ -54,7 +56,6 @@ public class ClientDAO {
             preparedStatement.setString(4, client.getNumber());
             preparedStatement.executeUpdate();
 
-            System.out.println("Добавлен новый клиент");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -122,6 +123,21 @@ public class ClientDAO {
             System.out.println("Database massage: В базе нет клиентов!");
             List<Client> clients = null;
             return clients;
+        }
+    }
+
+    static public void updateClient (Client client){
+        try {
+            preparedStatement = Database.connection.prepareStatement(updateCustomer);
+            preparedStatement.setString(1, client.getSurname());
+            preparedStatement.setString(2, client.getFirstName());
+            preparedStatement.setString(3, client.getPatronymic());
+            preparedStatement.setString(4, client.getNumber());
+            preparedStatement.setLong(5, client.getId());
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

@@ -1,10 +1,8 @@
 package com.haulmont.testtask.DAO;
 
-import com.haulmont.testtask.entity.Client;
 import com.haulmont.testtask.entity.Order;
 
 import java.sql.*;
-import java.sql.Date;
 import java.util.*;
 
 public class OrderDAO {
@@ -32,11 +30,11 @@ public class OrderDAO {
         }
     }
 
-    static public void addOrder(long clientID, Order order){
+    static public void addOrder(Order order){
         try {
             preparedStatement = Database.connection.prepareStatement(addOrder);
-            preparedStatement.setString(1,order.getDescription());
-            preparedStatement.setLong(2,clientID);
+            preparedStatement.setString(1, order.getDescription());
+            preparedStatement.setLong(2, order.getClientID());
             preparedStatement.setDate(3, order.getDataOfCreation());
             preparedStatement.setDate(4, order.getDataOfCompletion());
             preparedStatement.setDouble(5, order.getPrice());
@@ -60,20 +58,18 @@ public class OrderDAO {
             preparedStatement.setString(6, statusDescription);
             preparedStatement.executeUpdate();
 
-            System.out.println("Добавлен новый заказ");
         } catch (SQLException e) {
             System.out.println("Database massage: Новый заказ не был добавлен. Введены некорректные данные!");
         }
     }
 
-    static public void deleteOrder(long id){
+    static public void deleteOrder(long id) {
 
         try {
             preparedStatement = Database.connection.prepareStatement(deleteOrder);
             preparedStatement.setLong(1,id);
             preparedStatement.executeUpdate();
 
-            System.out.println("Удален заказ с id = " + id);
         } catch (SQLException e) {
             e.printStackTrace();
         }

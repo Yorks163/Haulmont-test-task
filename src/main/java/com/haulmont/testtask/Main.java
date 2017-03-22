@@ -19,6 +19,10 @@ public class Main {
 
         //ClientDAO.addClient("Скайуокер","Энакин","","0001");
         ClientDAO.seeTable();
+        //Client client = new Client("2","2","2","2");
+        //client.setId(17);
+       // ClientDAO.updateClient(client);
+        //ClientDAO.seeTable();
         //ClientDAO.deleteClient(2);
         //Client client = ClientDAO.getClient(5);
         //System.out.println(client.getFirstName());
@@ -26,7 +30,7 @@ public class Main {
 
         //OrderDAO.addOrder(4, "Усовершенствовать Спейдер", new java.util.Date("02/02/2017"), new java.util.Date("03/03/2017"), 112358, "Запланирован");
         //OrderDAO.deleteOrder(2);
-        OrderDAO.seeTable();
+        //OrderDAO.seeTable();
 
         //List<Client> clients = ClientDAO.getAllClient();
         //System.out.println(clients.get(1).getId());

@@ -15,24 +15,13 @@ public class MainUI extends UI {
     protected void init(VaadinRequest request) {
 
 
-        Database.startDatabase();
-
-
         TabSheet tabSheet = new TabSheet();
         tabSheet.setHeight(100.0f, Unit.PERCENTAGE);
         tabSheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
         tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
-        tabSheet.addTab(new TabClient().tabClient(), "Клиенты ");
-        tabSheet.addTab(new TabOrder().tabOrder(), "Заказы ");
+        tabSheet.addTab(new TabClient().tabClient(), "   Клиенты   ");
+        tabSheet.addTab(new TabOrder().tabOrder(), "   Заказы   ");
         setContent(tabSheet);
 
-
-
-
-
-
-
-
-        Database.closeDatabase();
     }
 }
