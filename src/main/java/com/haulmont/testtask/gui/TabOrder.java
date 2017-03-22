@@ -1,14 +1,11 @@
 package com.haulmont.testtask.gui;
 
-import com.haulmont.testtask.DAO.ClientDAO;
 import com.haulmont.testtask.DAO.OrderDAO;
-import com.haulmont.testtask.entity.Client;
 import com.haulmont.testtask.entity.Order;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 
 import java.sql.Date;
-import java.text.DateFormat;
 import java.util.List;
 
 
@@ -39,18 +36,19 @@ public class TabOrder {
         HorizontalLayout layout = new HorizontalLayout();
 
         Button addOrder = new Button("Добавить");
-        addOrder.addClickListener(event -> layout.addComponent(new EditCustomer().editCustomer()));
+        addOrder.addClickListener(event -> layout.getUI().getUI().addWindow(new EditOrderTable().addOrder()));
 
         Button updateOrder = new Button("Изменить");
-        updateOrder.addClickListener(event -> layout.addComponent(new EditCustomer().editCustomer()));
+        updateOrder.addClickListener(event -> layout.getUI().getUI().addWindow(new EditOrderTable().updateOrder()));
 
         Button deleteOrder = new Button("Удалить");
-        deleteOrder.addClickListener(event -> layout.addComponent(new EditCustomer().editCustomer()));
+        deleteOrder.addClickListener(event -> layout.getUI().getUI().addWindow(new EditClientTable().addClient()));
 
 
         FormLayout filter = new FormLayout();
         filter.setMargin(true);
-        //filter.addStyleName("outlined");
+        filter.addStyleName("outlined");
+        filter.setCaption("Фильтр");
         filter.setSizeFull();
 
         final TextField clientID = new TextField("ID Клиента", "");

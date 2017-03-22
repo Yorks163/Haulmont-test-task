@@ -10,7 +10,23 @@ import java.util.Locale;
 
 
 public class TabClient {
-    public HorizontalLayout tabClient(){
+
+    public VerticalLayout tabClient() {
+
+        HorizontalLayout buttons = new HorizontalLayout();
+
+        Button addClient = new Button("Добавить");
+        addClient.addClickListener(event -> buttons.getUI().getUI().addWindow(new EditClientTable().addClient()));
+
+        Button updateClient = new Button("Изменить");
+        updateClient.addClickListener(event -> buttons.getUI().getUI().addWindow(new EditClientTable().updateClient()));
+
+        Button deleteClient = new Button("Удалить");
+        deleteClient.addClickListener(event -> new Window("Delete"));
+
+        buttons.addComponent(addClient);
+        buttons.addComponent(updateClient);
+        buttons.addComponent(deleteClient);
 
 
         Grid grid = new Grid();
@@ -27,53 +43,16 @@ public class TabClient {
         //Заполнение таблицы данными из Базы данных
         List<Client> clients = ClientDAO.getAllClient();
         int index = clients.size();
-        for (int i=0; i<index; i++) {
-            grid.addRow(clients.get(i).getId(), clients.get(i).getFirstName(), clients.get(i).getSurname(), clients.get(i).getPatronymic(), clients.get(i).getNumber());
+        for (int i = 0; i < index; i++) {
+            grid.addRow(clients.get(i).getId(), clients.get(i).getSurname(), clients.get(i).getFirstName(), clients.get(i).getPatronymic(), clients.get(i).getNumber());
         }
 
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.addComponent(grid);
 
+        VerticalLayout verticalLayoutClient = new VerticalLayout();
+        verticalLayoutClient.addComponent(buttons);
+        verticalLayoutClient.addComponent(grid);
 
-        final TextField clientID = new TextField("ID Клиента", "");
-        clientID.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
-        final TextField status = new TextField("Статус", "");
-        status.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
-        final TextField description = new TextField("Описание", "");
-        description.setWidth(000.0f, Sizeable.Unit.PERCENTAGE);
-        description.setMaxLength(500);
-
-        FormLayout formLayout = new FormLayout();
-        formLayout.addComponent(clientID);
-        formLayout.addComponent(status);
-        formLayout.addComponent(description);
-
-        Button addClient = new Button("Добавить");
-        addClient.addClickListener(event -> {
-            layout.addComponent(formLayout);
-        });
-        Button updateClient = new Button("Изменить");
-        updateClient.addClickListener(event -> {
-            layout.addComponent(formLayout);
-        });
-
-        Button deleteClient = new Button("Удалить");
-        deleteClient.addClickListener(event -> {
-            layout.addComponent(formLayout);
-        });
-
-        VerticalLayout verticalLayout = new VerticalLayout();
-
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.addComponent(addClient);
-        horizontalLayout.addComponent(updateClient);
-        horizontalLayout.addComponent(deleteClient);
-
-        verticalLayout.addComponent(horizontalLayout);
-        verticalLayout.addComponent(grid);
-        layout.addComponent(verticalLayout);
-
-        return  layout;
+        return verticalLayoutClient;
     }
 
 }
