@@ -31,8 +31,8 @@ public class TabOrder {
         grid.addColumn("ID", Long.class).setWidth(80);
         grid.addColumn("Описание", String.class);
         grid.addColumn("ID Клиента", Long.class);
-        grid.addColumn("Дата создания", Date.class);
-        grid.addColumn("Дата окончания работ", Date.class);
+        grid.addColumn("Дата создания", String.class);
+        grid.addColumn("Дата окончания работ", String.class);
         grid.addColumn("Стоимость", Double.class);
         grid.addColumn("Статус", String.class);
         grid.setCaption("Список заказов");
@@ -45,8 +45,8 @@ public class TabOrder {
         List<Order> orders = OrderDAO.getAllOrder();
         int index = orders.size();
         for (int i=0; i<index; i++) {
-            grid.addRow(orders.get(i).getId(), orders.get(i).getDescription(), orders.get(i).getClientID() , orders.get(i).getDataOfCreation(),
-                        orders.get(i).getDataOfCompletion(), orders.get(i).getPrice(), orders.get(i).getStatusDescription());
+            grid.addRow(orders.get(i).getId(), orders.get(i).getDescription(), orders.get(i).getClientID(), orders.get(i).getDataOfCreation().toString(),
+                        orders.get(i).getDataOfCompletion().toString(), orders.get(i).getPrice(), orders.get(i).getStatusDescription());
         }
         Database.closeDatabase();
 

@@ -1,6 +1,7 @@
 package com.haulmont.testtask.DAO;
 
 import com.haulmont.testtask.entity.Order;
+import com.sun.org.apache.xpath.internal.SourceTree;
 
 import java.sql.*;
 import java.util.*;
@@ -117,7 +118,7 @@ public class OrderDAO {
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Database massage: Заказ небыл исправлен. Введены некорректные данные");
         }
     }
 

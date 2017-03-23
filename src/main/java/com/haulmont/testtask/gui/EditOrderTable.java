@@ -7,7 +7,10 @@ import com.haulmont.testtask.entity.Client;
 import com.haulmont.testtask.entity.Order;
 
 import com.vaadin.ui.*;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class EditOrderTable {
@@ -31,14 +34,18 @@ public class EditOrderTable {
         description.setMaxLength(500);
 
         final DateField dataOfCreation = new DateField("Дата создания");
-        dataOfCreation.setValue(new java.util.Date());
+        Date date =  new Date();
+        dataOfCreation.setValue(date);
         dataOfCreation.setSizeFull();
         dataOfCreation.setRequired(true);
 
         final DateField dataOfCompletion = new DateField("Дата окончания");
+        dataOfCompletion.setValue(new Date(date.getYear(), date.getMonth(), date.getDate()+1));
+        dataOfCompletion.setRequired(true);
         dataOfCompletion.setSizeFull();
 
         final TextField price = new TextField("Стоимость", "");
+        price.setRequired(true);
         price.setSizeFull();
 
         //Панель выбора клиента из существующих
@@ -81,8 +88,8 @@ public class EditOrderTable {
             OrderDAO.addOrder(order);
             List<Order> orders = OrderDAO.getAllOrder();
             int size = orders.size();
-            grid.addRow(orders.get(size-1).getId(), orders.get(size-1).getDescription(), orders.get(size-1).getClientID(), orders.get(size-1).getDataOfCreation(),
-                        orders.get(size-1).getDataOfCompletion(), orders.get(size-1).getPrice(), orders.get(size-1).getStatusDescription());
+            grid.addRow(orders.get(size-1).getId(), orders.get(size-1).getDescription(), orders.get(size-1).getClientID(), orders.get(size-1).getDataOfCreation().toString(),
+                        orders.get(size-1).getDataOfCompletion().toString(), orders.get(size-1).getPrice(), orders.get(size-1).getStatusDescription());
             Database.closeDatabase();
             window.close();
         });
@@ -119,13 +126,23 @@ public class EditOrderTable {
         description.setRequired(true);
         description.setMaxLength(500);
 
+        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+
         final DateField dataOfCreation = new DateField("Дата создания");
-        //dataOfCreation.setValue(new java.util.Date(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата создания").getValue().toString()));
+        try {
+            dataOfCreation.setValue(date.parse(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата создания").getValue().toString()));
+        } catch(Exception e) {
+            System.out.println("Order Table: Ошибка в считывании Даты создания");
+        }
         dataOfCreation.setSizeFull();
         dataOfCreation.setRequired(true);
 
         final DateField dataOfCompletion = new DateField("Дата окончания");
-        //dataOfCreation.setValue(new java.util.Date(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата окончания").getValue().toString()));
+        try {
+            dataOfCompletion.setValue(date.parse(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата окончания работ").getValue().toString()));
+        } catch(Exception e) {
+            System.out.println("Order Table: Ошибка в считывании Даты окончания работ");
+        }
         dataOfCompletion.setSizeFull();
 
         final TextField price = new TextField("Стоимость",  grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Стоимость").getValue().toString());
@@ -168,15 +185,15 @@ public class EditOrderTable {
             Database.startDatabase();
             Long id = (Long) grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID").getValue();
             Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
-                                    new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue().toString()), status.getValue().toString());
+                                    new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue()), status.getValue().toString());
             order.setId(id);
             OrderDAO.updateOrder(order);
             Database.closeDatabase();
 
             grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").setValue(description.getValue());
             grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID Клиента").setValue(clientID.getValue());
-           // grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата создания").setValue(new java.sql.Date(dataOfCreation.getValue().getTime()));
-            //grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата окончания").setValue(new java.sql.Date(dataOfCompletion.getValue().getTime()));
+            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата создания").setValue(new java.sql.Date(dataOfCreation.getValue().getTime()).toString());
+            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата окончания работ").setValue(new java.sql.Date(dataOfCompletion.getValue().getTime()).toString());
             grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Стоимость").setValue(Double.parseDouble(price.getValue()));
             grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Статус").setValue(status.getValue());
 
