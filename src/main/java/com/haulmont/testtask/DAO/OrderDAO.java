@@ -10,6 +10,7 @@ public class OrderDAO {
     static private PreparedStatement preparedStatement;
     static private String addOrder = "INSERT INTO orders (description, clientID, dataOfCreation, dateOfCompletion, price, status) VALUES (?,?,?,?,?,?)";
     static private String deleteOrder = "DELETE FROM orders WHERE id= ?";
+    static private String updateOrder = "UPDATE orders SET description = ?, clientID = ?, dataOfCreation = ?, dateOfCompletion = ?, price = ?, status= ? WHERE id = ?";
 
     static public void seeTable(){
         try {
@@ -41,9 +42,8 @@ public class OrderDAO {
             preparedStatement.setString(6, order.getStatusDescription());
             preparedStatement.executeUpdate();
 
-            System.out.println("Добавлен новый заказ");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Database massage: Заказ небыл добавлен!");
         }
     }
 
@@ -97,10 +97,27 @@ public class OrderDAO {
 
             return orders;
         } catch (SQLException e) {
-            e.printStackTrace();
             System.out.println("Database massage: В базе нет заказов!");
             List<Order> orders = null;
             return orders;
+        }
+    }
+
+    static public void updateOrder (Order order){
+        try {
+            preparedStatement = Database.connection.prepareStatement(updateOrder);
+            preparedStatement.setString(1, order.getDescription());
+            preparedStatement.setLong(2, order.getClientID());
+            preparedStatement.setDate(3, order.getDataOfCreation());
+            preparedStatement.setDate(4, order.getDataOfCompletion());
+            preparedStatement.setDouble(5, order.getPrice());
+            preparedStatement.setString(6, order.getStatusDescription());
+            preparedStatement.setLong(7, order.getId());
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

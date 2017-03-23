@@ -18,6 +18,8 @@ public class EditOrderTable {
         window.center();
         window.setWidth("450");
         window.setHeight("400");
+        window.setClosable(false);
+        window.setResizable(false);
 
         final FormLayout addOrder = new FormLayout();
         addOrder.setMargin(true);
@@ -66,10 +68,12 @@ public class EditOrderTable {
 
         final Button saveOrder = new Button("Добавить");
         final Button cancel = new Button("Отмена");
+
         HorizontalLayout buttons = new HorizontalLayout();
         buttons.addComponent(saveOrder);
         buttons.addComponent(cancel);
 
+        //Действия при нажатии на кнопки
         saveOrder.addClickListener(clickEvent -> {
             Database.startDatabase();
             Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
@@ -82,6 +86,8 @@ public class EditOrderTable {
             Database.closeDatabase();
             window.close();
         });
+
+        cancel.addClickListener(clickEvent -> window.close());
 
         addOrder.addComponent(description);
         addOrder.addComponent(clientID);
@@ -101,6 +107,8 @@ public class EditOrderTable {
         window.center();
         window.setWidth("450");
         window.setHeight("400");
+        window.setClosable(false);
+        window.setResizable(false);
 
         final FormLayout addOrder = new FormLayout();
         addOrder.setMargin(true);
@@ -148,28 +156,35 @@ public class EditOrderTable {
         status.setValue(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Статус").getValue().toString());
         status.setNullSelectionAllowed(false);
 
-        final Button saveOrder = new Button("Добавить");
+        final Button updateOrder = new Button("Изменить");
         final Button cancel = new Button("Отмена");
+
         HorizontalLayout buttons = new HorizontalLayout();
-        buttons.addComponent(saveOrder);
+        buttons.addComponent(updateOrder);
         buttons.addComponent(cancel);
 
-        saveOrder.addClickListener(clickEvent -> {
-            //Database.startDatabase();
+        //Действия при нажатии на кнопки
+        updateOrder.addClickListener(clickEvent -> {
+            Database.startDatabase();
             Long id = (Long) grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID").getValue();
             Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
                                     new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue().toString()), status.getValue().toString());
             order.setId(id);
-            System.out.println(order.getDescription());
-            //ClientDAO.updateClient(client);
-            //Database.closeDatabase();
+            OrderDAO.updateOrder(order);
+            Database.closeDatabase();
 
-            //grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Фамилия").setValue(surname.getValue());
-            //grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Имя").setValue(firstName.getValue());
-            //grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Отчество").setValue(patronymic.getValue());
-            //grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Номер телефона").setValue(number.getValue());
+            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").setValue(description.getValue());
+            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID Клиента").setValue(clientID.getValue());
+           // grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата создания").setValue(new java.sql.Date(dataOfCreation.getValue().getTime()));
+            //grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата окончания").setValue(new java.sql.Date(dataOfCompletion.getValue().getTime()));
+            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Стоимость").setValue(Double.parseDouble(price.getValue()));
+            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Статус").setValue(status.getValue());
+
             window.close();
         });
+
+        cancel.addClickListener(clickEvent -> window.close());
+
 
         addOrder.addComponent(description);
         addOrder.addComponent(clientID);

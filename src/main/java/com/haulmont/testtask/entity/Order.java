@@ -36,7 +36,8 @@ public class Order {
             this.dataOfCreation = order.getDataOfCreation();
             this.dataOfCompletion = order.getDataOfCompletion();
             this.price = order.getPrice();
-            this.statusDescription = StatusDescription.valueOf(order.getStatusDescription());
+            if (order.getStatusDescription().equals("Принят клиентом")) this.statusDescription = StatusDescription.valueOf("Принят_клиентом");
+            else this.statusDescription = StatusDescription.valueOf(order.getStatusDescription());
         } catch (IllegalArgumentException e) {
             System.out.println("Exception: Некорректный статус заказа!");
         }
@@ -72,9 +73,11 @@ public class Order {
     }
 
     public String getStatusDescription(){
-        if (statusDescription.toString() == "Принят_клиентом") return "Принят клиентом";
-        else return this.statusDescription.toString();
+        if (this.statusDescription.toString() == "Принят_клиентом") return "Принят клиентом";
+         else return this.statusDescription.toString();
+
     }
+
 
     public void setId(long id) {
         this.id = id;
@@ -102,9 +105,8 @@ public class Order {
 
     public void setStatusDescription(String statusDescription) {
         try {
-            if (statusDescription.equals("Принят клиентом"))
-                statusDescription = "Принят_клиентом";
-            this.statusDescription = StatusDescription.valueOf(statusDescription);
+            if (statusDescription.equals("Принят клиентом")) this.statusDescription = StatusDescription.valueOf("Принят_клиентом");
+             else this.statusDescription = StatusDescription.valueOf(statusDescription);
         } catch (IllegalArgumentException e) {
             System.out.println("Exception: Некорректный статус заказа!");
         }

@@ -6,6 +6,7 @@ import com.haulmont.testtask.DAO.OrderDAO;
 import com.haulmont.testtask.entity.Client;
 import com.haulmont.testtask.entity.Order;
 
+import java.sql.Date;
 import java.util.List;
 
  /* Класс Main предназначен для выполнения
@@ -15,21 +16,24 @@ public class Main {
 
     public static void main (String[] args){
 
-        Database.startDatabase();
+        //Database.startDatabase();
 
         //ClientDAO.addClient("Скайуокер","Энакин","","0001");
-        ClientDAO.seeTable();
+        //ClientDAO.seeTable();
         //Client client = new Client("2","2","2","2");
         //client.setId(17);
-       // ClientDAO.updateClient(client);
+        //ClientDAO.updateClient(client);
         //ClientDAO.seeTable();
         //ClientDAO.deleteClient(2);
         //Client client = ClientDAO.getClient(5);
         //System.out.println(client.getFirstName());
         //System.out.println(client.getId());
 
-        //OrderDAO.addOrder(4, "Усовершенствовать Спейдер", new java.util.Date("02/02/2017"), new java.util.Date("03/03/2017"), 112358, "Запланирован");
         //OrderDAO.deleteOrder(2);
+        //Order order = new Order("111", 20, new java.sql.Date(new java.util.Date("2017/01/01").getTime()) , new java.sql.Date(new java.util.Date("2017/02/02").getTime()), 111, "Выполнен");
+        //System.out.println(order.getStatusDescription());
+        //order.setStatusDescription("Принят клиентом");
+        //System.out.println(order.getStatusDescription());
         //OrderDAO.seeTable();
 
         //List<Client> clients = ClientDAO.getAllClient();
@@ -40,6 +44,6 @@ public class Main {
         //System.out.println(orders.get(0).getDescription());
 
 
-        Database.closeDatabase();
+        //Database.closeDatabase();
     }
 }
