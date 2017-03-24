@@ -4,6 +4,7 @@ import com.haulmont.testtask.DAO.ClientDAO;
 import com.haulmont.testtask.DAO.Database;
 import com.haulmont.testtask.entity.Client;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.List;
@@ -17,6 +18,7 @@ public class TabClient {
 
         Button addClient = new Button("Добавить");
         addClient.setStyleName(ValoTheme.BUTTON_LARGE);
+        addClient.setIcon(VaadinIcons.USER);
         Button updateClient = new Button("Изменить");
         Button deleteClient = new Button("Удалить");
         deleteClient.setStyleName(ValoTheme.BUTTON_DANGER);
@@ -32,7 +34,7 @@ public class TabClient {
         grid.addColumn("Имя", String.class);
         grid.addColumn("Отчество", String.class);
         grid.addColumn("Номер телефона", String.class);
-        grid.setCaption("Список клиентов");
+        //grid.setCaption("Список клиентов");
         grid.setWidth("1280");
         grid.setHeight("720");
         grid.setEditorEnabled(false);
@@ -59,6 +61,7 @@ public class TabClient {
         deleteClient.addClickListener(event -> new EditClientTable().deleteClient(grid));
 
         VerticalLayout verticalLayoutClient = new VerticalLayout();
+        verticalLayoutClient.setHeightUndefined();
         verticalLayoutClient.addComponent(buttons);
         verticalLayoutClient.addComponent(grid);
 

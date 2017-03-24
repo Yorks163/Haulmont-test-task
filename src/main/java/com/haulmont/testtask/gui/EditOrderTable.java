@@ -6,8 +6,8 @@ import com.haulmont.testtask.DAO.OrderDAO;
 import com.haulmont.testtask.entity.Client;
 import com.haulmont.testtask.entity.Order;
 
-import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.sass.internal.selector.Selector;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -62,6 +62,8 @@ public class EditOrderTable {
         for (int i=0; i<index; i++) {
             allClientID.add(clients.get(i).getId());
         }
+
+
         ComboBox clientID = new ComboBox("ID Клиента", allClientID);
         clientID.setSizeFull();
         clientID.setRequired(true);

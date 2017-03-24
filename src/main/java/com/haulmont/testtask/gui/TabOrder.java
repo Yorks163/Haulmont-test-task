@@ -29,16 +29,17 @@ public class TabOrder {
         //Создаем таблицу
         Grid grid = new Grid();
         grid.addColumn("ID", Long.class).setWidth(80);
-        grid.addColumn("Описание", String.class);
+        grid.addColumn("Описание", String.class).setMaximumWidth(300);
         grid.addColumn("ID Клиента", Long.class);
         grid.addColumn("Дата создания", String.class);
         grid.addColumn("Дата окончания работ", String.class);
         grid.addColumn("Стоимость", Double.class);
         grid.addColumn("Статус", String.class);
-        grid.setCaption("Список заказов");
+        //grid.setCaption("Список заказов");
         grid.setWidth("1280");
         grid.setHeight("720");
         grid.setEditorEnabled(false);
+
 
         //Заполнение таблицы данными из Базы данных
         Database.startDatabase();
@@ -79,6 +80,7 @@ public class TabOrder {
         horizontalLayoutBottom.addComponent(filter);
 
         VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setHeightUndefined();
         verticalLayout.addComponent(horizontalLayoutTop);
         verticalLayout.addComponent(horizontalLayoutBottom);
 
