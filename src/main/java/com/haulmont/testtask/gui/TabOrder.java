@@ -65,22 +65,8 @@ public class TabOrder {
         FormLayout filter = new FormLayout();
         filter.setMargin(true);
         filter.addStyleName("outlined");
-        filter.setCaption("Фильтр");
         filter.setSizeFull();
-
-        final TextField clientID = new TextField("ID Клиента", "");
-        clientID.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
-        final TextField status = new TextField("Статус", "");
-        status.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
-        final TextField description = new TextField("Описание", "");
-        description.setWidth(000.0f, Sizeable.Unit.PERCENTAGE);
-        description.setMaxLength(500);
-
-
-        filter.addComponent(clientID);
-        filter.addComponent(status);
-        filter.addComponent(description);
-        filter.addComponent(new Button("Применить"));
+        filter.addComponent(new EditOrderTable().filter(grid));
 
 
         HorizontalLayout horizontalLayoutTop = new HorizontalLayout();

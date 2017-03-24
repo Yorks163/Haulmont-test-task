@@ -68,7 +68,6 @@ public class ClientDAO {
             preparedStatement.setLong(1,id);
             preparedStatement.executeUpdate();
 
-            System.out.println("Удален клиент с id = " + id);
         } catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("Database massadge: Невозможно удалить клиента с id = " + id + ". Для него существует заказ!");
         } catch (SQLException e) {

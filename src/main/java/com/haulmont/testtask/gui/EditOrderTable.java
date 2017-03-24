@@ -6,7 +6,13 @@ import com.haulmont.testtask.DAO.OrderDAO;
 import com.haulmont.testtask.entity.Client;
 import com.haulmont.testtask.entity.Order;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Container.Filterable;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,6 +80,7 @@ public class EditOrderTable {
         status.setNullSelectionAllowed(false);
 
         final Button saveOrder = new Button("Добавить");
+        saveOrder.setStyleName(ValoTheme.BUTTON_FRIENDLY);
         final Button cancel = new Button("Отмена");
 
         HorizontalLayout buttons = new HorizontalLayout();
@@ -228,4 +235,46 @@ public class EditOrderTable {
         Notification.show("Удален заказ с ID = "+id.toString());
     }
 
+    public FormLayout filter(Grid grid){
+        FormLayout filterLayout = new FormLayout();
+        filterLayout.setCaption("Фильтр");
+
+        TextField clientID = new TextField("ID Клиента", "");
+        clientID.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
+        TextField status = new TextField("Статус", "");
+        status.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
+        TextField description = new TextField("Описание", "");
+        description.setWidth(000.0f, Sizeable.Unit.PERCENTAGE);
+        description.setMaxLength(500);
+        Button apply = new Button("Применить");
+
+        //Обработка полей фильтра при нажатии кнопки Применить
+        apply.addClickListener(event-> {
+
+            Filterable filterable = (Filterable) grid.getContainerDataSource();
+            filterable.removeAllContainerFilters();
+
+            Filter filterClientID = new SimpleStringFilter("ID Клиента", clientID.getValue().toString(),
+                    true, false);
+
+            Filter filterStatus = new SimpleStringFilter("Статус", status.getValue().toString(),
+                    true, false);
+
+            Filter filterDescription = new SimpleStringFilter("Описание", description.getValue().toString(),
+                    true, false);
+
+
+            filterable.addContainerFilter(filterClientID);
+            filterable.addContainerFilter(filterStatus);
+            filterable.addContainerFilter(filterDescription);
+        });
+
+
+
+        filterLayout.addComponent(clientID);
+        filterLayout.addComponent(status);
+        filterLayout.addComponent(description);
+        filterLayout.addComponent(apply);
+        return filterLayout;
+    }
 }
