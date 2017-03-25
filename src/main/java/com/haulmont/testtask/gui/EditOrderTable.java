@@ -7,7 +7,6 @@ import com.haulmont.testtask.entity.Client;
 import com.haulmont.testtask.entity.Order;
 
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.sass.internal.selector.Selector;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -238,8 +237,14 @@ public class EditOrderTable {
     }
 
     public FormLayout filter(Grid grid){
+
         FormLayout filterLayout = new FormLayout();
-        filterLayout.setCaption("Фильтр");
+        filterLayout.addStyleName(ValoTheme.TABLE_BORDERLESS);
+
+        Label textFilter = new Label("Фильтр");
+        textFilter.setStyleName(ValoTheme.LABEL_H3);
+        filterLayout.addComponent(textFilter);
+        filterLayout.setComponentAlignment(textFilter, Alignment.TOP_LEFT);
 
         TextField clientID = new TextField("ID Клиента", "");
         clientID.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);

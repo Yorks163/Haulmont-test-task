@@ -5,6 +5,7 @@ import com.haulmont.testtask.DAO.Database;
 import com.haulmont.testtask.entity.Client;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.List;
@@ -15,17 +16,28 @@ public class TabClient {
 
         //Добавляем кнопки
         HorizontalLayout buttons = new HorizontalLayout();
+        buttons.setSpacing(true);
+        buttons.setHeight("70");
+        buttons.setWidth("1180");
 
         Button addClient = new Button("Добавить");
-        addClient.setStyleName(ValoTheme.BUTTON_LARGE);
         addClient.setIcon(VaadinIcons.USER);
+        addClient.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+        addClient.addStyleName(ValoTheme.BUTTON_LARGE);
         Button updateClient = new Button("Изменить");
         Button deleteClient = new Button("Удалить");
         deleteClient.setStyleName(ValoTheme.BUTTON_DANGER);
 
         buttons.addComponent(addClient);
-        buttons.addComponent(updateClient);
-        buttons.addComponent(deleteClient);
+        buttons.setComponentAlignment(addClient, Alignment.BOTTOM_LEFT);
+
+        HorizontalLayout twoButtons = new HorizontalLayout();
+        twoButtons.addComponent(updateClient);
+        twoButtons.addComponent(deleteClient);
+        twoButtons.setSpacing(true);
+
+        buttons.addComponent(twoButtons);
+        buttons.setComponentAlignment(twoButtons, Alignment.BOTTOM_RIGHT);
 
         //Создаем таблицу
         Grid grid = new Grid();
@@ -36,8 +48,9 @@ public class TabClient {
         grid.addColumn("Номер телефона", String.class);
         //grid.setCaption("Список клиентов");
         grid.setWidth("1280");
-        grid.setHeight("720");
+        grid.setHeight(1000, Sizeable.Unit.PERCENTAGE);
         grid.setEditorEnabled(false);
+        grid.setStyleName(ValoTheme.TABLE_BORDERLESS);
 
         //Заполнение таблицы данными из Базы данных
         Database.startDatabase();
@@ -61,9 +74,12 @@ public class TabClient {
         deleteClient.addClickListener(event -> new EditClientTable().deleteClient(grid));
 
         VerticalLayout verticalLayoutClient = new VerticalLayout();
-        verticalLayoutClient.setHeightUndefined();
         verticalLayoutClient.addComponent(buttons);
+        verticalLayoutClient.setComponentAlignment(buttons, Alignment.TOP_LEFT);
         verticalLayoutClient.addComponent(grid);
+        verticalLayoutClient.setComponentAlignment(grid, Alignment.TOP_LEFT);
+        verticalLayoutClient.setSpacing(true);
+        verticalLayoutClient.setSizeFull();
 
         return verticalLayoutClient;
     }

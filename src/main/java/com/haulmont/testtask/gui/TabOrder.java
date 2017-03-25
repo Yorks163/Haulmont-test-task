@@ -15,16 +15,29 @@ public class TabOrder {
 
         //Добавляем кнопки
         HorizontalLayout buttons = new HorizontalLayout();
+        buttons.setSpacing(true);
+        buttons.setHeight("70");
+        buttons.setWidth("1180");
 
         Button addOrder = new Button("Добавить");
-        addOrder.setStyleName(ValoTheme.BUTTON_LARGE);
+        addOrder.addStyleName(ValoTheme.BUTTON_LARGE);
+        addOrder.addStyleName(ValoTheme.BUTTON_FRIENDLY);
         Button updateOrder = new Button("Изменить");
         Button deleteOrder = new Button("Удалить");
         deleteOrder.setStyleName(ValoTheme.BUTTON_DANGER);
 
         buttons.addComponent(addOrder);
-        buttons.addComponent(updateOrder);
-        buttons.addComponent(deleteOrder);
+        buttons.setComponentAlignment(addOrder, Alignment.BOTTOM_LEFT);
+
+        HorizontalLayout twoButtons = new HorizontalLayout();
+        twoButtons.addComponent(updateOrder);
+        twoButtons.addComponent(deleteOrder);
+        twoButtons.setSpacing(true);
+
+        buttons.addComponent(twoButtons);
+        buttons.setComponentAlignment(twoButtons, Alignment.BOTTOM_RIGHT);
+
+
 
         //Создаем таблицу
         Grid grid = new Grid();
@@ -39,6 +52,7 @@ public class TabOrder {
         grid.setWidth("1280");
         grid.setHeight("720");
         grid.setEditorEnabled(false);
+        grid.setStyleName(ValoTheme.TABLE_BORDERLESS);
 
 
         //Заполнение таблицы данными из Базы данных
@@ -64,23 +78,23 @@ public class TabOrder {
 
 
         FormLayout filter = new FormLayout();
-        filter.setMargin(true);
-        filter.addStyleName("outlined");
-        filter.setSizeFull();
         filter.addComponent(new EditOrderTable().filter(grid));
 
 
         HorizontalLayout horizontalLayoutTop = new HorizontalLayout();
-        horizontalLayoutTop.addComponent(addOrder);
-        horizontalLayoutTop.addComponent(updateOrder);
-        horizontalLayoutTop.addComponent(deleteOrder);
+        horizontalLayoutTop.addComponent(buttons);
+        horizontalLayoutTop.setComponentAlignment(buttons, Alignment.TOP_LEFT);
 
         HorizontalLayout horizontalLayoutBottom = new HorizontalLayout();
+        horizontalLayoutBottom.setSpacing(true);
         horizontalLayoutBottom.addComponent(grid);
+        horizontalLayoutBottom.setComponentAlignment(grid, Alignment.TOP_LEFT);
         horizontalLayoutBottom.addComponent(filter);
+        horizontalLayoutBottom.setComponentAlignment(filter, Alignment.TOP_RIGHT);
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setHeightUndefined();
+        verticalLayout.setSpacing(true);
         verticalLayout.addComponent(horizontalLayoutTop);
         verticalLayout.addComponent(horizontalLayoutBottom);
 

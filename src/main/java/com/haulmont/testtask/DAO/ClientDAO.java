@@ -61,17 +61,20 @@ public class ClientDAO {
         }
     }
 
-    static public void deleteClient(long id){
+    static public int deleteClient(long id){
 
         try {
             preparedStatement = Database.connection.prepareStatement(deleteCustomer);
             preparedStatement.setLong(1,id);
             preparedStatement.executeUpdate();
-
+            return 0;
         } catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("Database massadge: Невозможно удалить клиента с id = " + id + ". Для него существует заказ!");
+            //Возвращаем код ошибки
+            return 1;
         } catch (SQLException e) {
             e.printStackTrace();
+            return 2;
         }
     }
 

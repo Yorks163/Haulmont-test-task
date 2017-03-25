@@ -149,17 +149,21 @@ public class EditClientTable {
         return window;
     }
 
-    public  void deleteClient(Grid grid){
+    public void deleteClient(Grid grid){
         //Проверка, что выбрана строка для удаления
         if (grid.getSelectedRow() == null) return;
         Database.startDatabase();
 
         Long id = (Long) grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID").getValue();
         Database.startDatabase();
-        ClientDAO.deleteClient(id);
+        int result = ClientDAO.deleteClient(id);
         Database.closeDatabase();
 
-        grid.getContainerDataSource().removeItem(grid.getSelectedRow());
-        Notification.show("Удален клиент с ID = "+id.toString());
+        if (result == 0) {
+            grid.getContainerDataSource().removeItem(grid.getSelectedRow());
+            Notification.show("Удален клиент с ID = " + id.toString());
+        } else if (result == 1) {
+            Notification.show("Для клиента с ID = " + id.toString() + " существует заказ!", Notification.TYPE_ERROR_MESSAGE);
+        } else Notification.show("Ошибка базы данных!",Notification.TYPE_ERROR_MESSAGE);
     }
 }

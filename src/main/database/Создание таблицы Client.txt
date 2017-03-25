@@ -1,7 +1,7 @@
 CREATE TABLE client
 (id BIGINT IDENTITY,
- surname VARCHAR(50),
- firstName VARCHAR(50),
+ surname VARCHAR(50) NOT NULL,
+ firstName VARCHAR(50) NOT NULL,
  patronymic VARCHAR(50),
- number VARCHAR(50),
+ number VARCHAR(50) NOT NULL,
  PRIMARY KEY (id))
