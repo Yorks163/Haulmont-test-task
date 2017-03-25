@@ -6,8 +6,11 @@ import com.haulmont.testtask.entity.Client;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+
+import java.nio.file.Path;
 import java.util.List;
 
 public class TabClient {
@@ -21,7 +24,7 @@ public class TabClient {
         buttons.setWidth("1180");
 
         Button addClient = new Button("Добавить");
-        addClient.setIcon(VaadinIcons.USER);
+        addClient.setIcon(VaadinIcons.USER_CHECK);
         addClient.addStyleName(ValoTheme.BUTTON_FRIENDLY);
         addClient.addStyleName(ValoTheme.BUTTON_LARGE);
         Button updateClient = new Button("Изменить");

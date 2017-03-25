@@ -69,7 +69,6 @@ public class ClientDAO {
             preparedStatement.executeUpdate();
             return 0;
         } catch (SQLIntegrityConstraintViolationException e) {
-            System.out.println("Database massadge: Невозможно удалить клиента с id = " + id + ". Для него существует заказ!");
             //Возвращаем код ошибки
             return 1;
         } catch (SQLException e) {

@@ -6,17 +6,22 @@ import com.haulmont.testtask.DAO.OrderDAO;
 import com.haulmont.testtask.entity.Client;
 import com.haulmont.testtask.entity.Order;
 
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.data.validator.*;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
 
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 public class EditOrderTable {
 
@@ -43,15 +48,35 @@ public class EditOrderTable {
         dataOfCreation.setValue(date);
         dataOfCreation.setSizeFull();
         dataOfCreation.setRequired(true);
+        dataOfCreation.addValidator(new DateRangeValidator("Заказ должен быть принят не более одного месяца назад и не позднее сегодняшнего дня", new Date(date.getYear(), date.getMonth()-1, date.getDate()+1),
+                                                            new java.sql.Date(date.getTime()), Resolution.YEAR));
+
 
         final DateField dataOfCompletion = new DateField("Дата окончания");
         dataOfCompletion.setValue(new Date(date.getYear(), date.getMonth(), date.getDate()+1));
         dataOfCompletion.setRequired(true);
         dataOfCompletion.setSizeFull();
+        dataOfCompletion.addValidator(new DateRangeValidator("Заказ может быть завершен не раньше дня создания заказа и не позднее трех месяцев с текущего дня", new Date(date.getTime()),
+                                                             new Date(date.getYear(), date.getMonth()+3, date.getDate()), Resolution.YEAR));
 
-        final TextField price = new TextField("Стоимость", "");
+        //Обновляем валидатор при изменении даты создания заказа
+        dataOfCreation.addValueChangeListener(event -> {
+            //Если дата создания введена некорректно
+            try {
+                dataOfCompletion.removeAllValidators();
+                Date updateDateOfCreation = dataOfCreation.getValue();
+                dataOfCompletion.addValidator(new DateRangeValidator("Заказ может быть завершен не раньше дня создания заказа и не позднее трех месяцев с текущего дня",
+                                                                    new Date(updateDateOfCreation.getYear(), updateDateOfCreation.getMonth(), updateDateOfCreation.getDate()-1),
+                                                                    new Date(date.getYear(), date.getMonth()+3, date.getDate()), Resolution.YEAR));
+            } catch (NullPointerException e) {
+            }
+
+        } );
+        final TextField price = new TextField("Стоимость");
         price.setRequired(true);
         price.setSizeFull();
+        //Стоимость возможно ввести как с разделителем ',' между целой и дробной частью, так и с '.'
+        price.addValidator(new RegexpValidator("[0-9]{1,6}(\\.?\\,?[0-9]{1,2}){0,1}", true, "Стоимость не может быть отрицательной или быть равной 1 000 000 и более"));
 
         //Панель выбора клиента из существующих
         List<Long> allClientID = new ArrayList();
@@ -61,7 +86,6 @@ public class EditOrderTable {
         for (int i=0; i<index; i++) {
             allClientID.add(clients.get(i).getId());
         }
-
 
         ComboBox clientID = new ComboBox("ID Клиента", allClientID);
         clientID.setSizeFull();
@@ -90,17 +114,36 @@ public class EditOrderTable {
 
         //Действия при нажатии на кнопки
         saveOrder.addClickListener(clickEvent -> {
-            Database.startDatabase();
-            Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
-                                    new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue()), status.getValue().toString() );
-            OrderDAO.addOrder(order);
-            List<Order> orders = OrderDAO.getAllOrder();
-            int size = orders.size();
-            grid.addRow(orders.get(size-1).getId(), orders.get(size-1).getDescription(), orders.get(size-1).getClientID(), orders.get(size-1).getDataOfCreation().toString(),
-                        orders.get(size-1).getDataOfCompletion().toString(), orders.get(size-1).getPrice(), orders.get(size-1).getStatusDescription());
-            Database.closeDatabase();
-            window.close();
+
+            try {
+                description.validate();
+                clientID.validate();
+                dataOfCreation.validate();
+                dataOfCompletion.validate();
+                price.validate();
+                status.validate();
+
+                    Database.startDatabase();
+                    Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
+                                            new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue().replace(',', '.')),
+                                            status.getValue().toString() );
+                    OrderDAO.addOrder(order);
+                    List<Order> orders = OrderDAO.getAllOrder();
+                    int size = orders.size();
+                    grid.addRow(orders.get(size-1).getId(), orders.get(size-1).getDescription(), orders.get(size-1).getClientID(), orders.get(size-1).getDataOfCreation().toString(),
+                                orders.get(size-1).getDataOfCompletion().toString(), orders.get(size-1).getPrice(), orders.get(size-1).getStatusDescription());
+                    Database.closeDatabase();
+                    window.close();
+
+            } catch (Validator.InvalidValueException e) {
+                description.setRequiredError("Введите описание заказа");
+                clientID.setRequiredError("Укажите клиента, для которого выполняется заказ");
+                price.setRequiredError("Введите стоимость заказа");
+                status.setRequiredError("Укажите статус заказа");
+            }
         });
+
+
 
         cancel.addClickListener(clickEvent -> window.close());
 
@@ -132,6 +175,7 @@ public class EditOrderTable {
         final TextField description = new TextField("Описание", grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").getValue().toString());
         description.setSizeFull();
         description.setRequired(true);
+        description.setRequiredError("Опишите выполняемую работу");
         description.setMaxLength(500);
 
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
@@ -144,6 +188,7 @@ public class EditOrderTable {
         }
         dataOfCreation.setSizeFull();
         dataOfCreation.setRequired(true);
+        dataOfCreation.setRequiredError("Необходимо указать дату создания заказа");
 
         final DateField dataOfCompletion = new DateField("Дата окончания");
         try {
@@ -152,9 +197,13 @@ public class EditOrderTable {
             System.out.println("Order Table: Ошибка в считывании Даты окончания работ");
         }
         dataOfCompletion.setSizeFull();
+        dataOfCompletion.setRequired(true);
+        dataOfCreation.setRequiredError("Необходимо указать дату завершения работ");
 
         final TextField price = new TextField("Стоимость",  grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Стоимость").getValue().toString());
         price.setSizeFull();
+        price.setRequired(true);
+        price.setRequiredError("укажите стоимость");
 
         //Панель выбора клиента из существующих
         List<Long> allClientID = new ArrayList();
@@ -166,7 +215,7 @@ public class EditOrderTable {
         }
         ComboBox clientID = new ComboBox("ID Клиента", allClientID);
         clientID.setSizeFull();
-        clientID.setRequired(true);
+        clientID.setRequired(false);
         clientID.setValue(Long.parseLong(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID Клиента").getValue().toString()));
         clientID.setNullSelectionAllowed(false);
 
@@ -177,10 +226,9 @@ public class EditOrderTable {
         allStatus.add("Принят клиентом");
         ComboBox status = new ComboBox("Статус", allStatus);
         status.setSizeFull();
-        status.setRequired(true);
         status.setValue(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Статус").getValue().toString());
         status.setNullSelectionAllowed(false);
-
+        status.setRequired(false);
         final Button updateOrder = new Button("Изменить");
         final Button cancel = new Button("Отмена");
 
@@ -260,13 +308,10 @@ public class EditOrderTable {
 
             Filterable filterable = (Filterable) grid.getContainerDataSource();
             filterable.removeAllContainerFilters();
-
             Filter filterClientID = new SimpleStringFilter("ID Клиента", clientID.getValue().toString(),
                     true, false);
-
             Filter filterStatus = new SimpleStringFilter("Статус", status.getValue().toString(),
                     true, false);
-
             Filter filterDescription = new SimpleStringFilter("Описание", description.getValue().toString(),
                     true, false);
 
@@ -275,8 +320,6 @@ public class EditOrderTable {
             filterable.addContainerFilter(filterStatus);
             filterable.addContainerFilter(filterDescription);
         });
-
-
 
         filterLayout.addComponent(clientID);
         filterLayout.addComponent(status);
