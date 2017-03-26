@@ -6,19 +6,27 @@ import com.haulmont.testtask.entity.Client;
 
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
 import java.util.List;
 
+/**
+ * Класс отвечает за графическое представление клиентов и работу с ними
+ *
+ * @author Shakirov Anton
+ */
 public class TabClient {
 
+    /**
+     * Метод возвращает слой для работы с клиентами
+     */
     public VerticalLayout tabClient() {
 
-        //Добавляем кнопки
+        //Создаем слой с кнопками
         HorizontalLayout buttons = new HorizontalLayout();
         buttons.setSpacing(true);
         buttons.setHeight("70");
         buttons.setWidth("64.7%");
 
+        //Создаем кнопки редактирования
         Button addClient = new Button("Добавить");
         addClient.addStyleName(ValoTheme.BUTTON_FRIENDLY);
         addClient.addStyleName(ValoTheme.BUTTON_LARGE);
@@ -26,14 +34,17 @@ public class TabClient {
         Button deleteClient = new Button("Удалить");
         deleteClient.setStyleName(ValoTheme.BUTTON_DANGER);
 
+        //Добавляем созданные кнопки на слой для кнопок
         buttons.addComponent(addClient);
         buttons.setComponentAlignment(addClient, Alignment.BOTTOM_LEFT);
 
+        //Кнопки редактирования и удаления помещаем в отдельный слой, чтобы они стояли рядом
         HorizontalLayout twoButtons = new HorizontalLayout();
         twoButtons.addComponent(updateClient);
         twoButtons.addComponent(deleteClient);
         twoButtons.setSpacing(true);
 
+        //Слой с кнопками создан
         buttons.addComponent(twoButtons);
         buttons.setComponentAlignment(twoButtons, Alignment.BOTTOM_RIGHT);
 
@@ -44,7 +55,6 @@ public class TabClient {
         grid.addColumn("Имя", String.class);
         grid.addColumn("Отчество", String.class);
         grid.addColumn("Номер телефона", String.class);
-        //grid.setCaption("Список клиентов");
         grid.setWidth("64.7%");
         grid.setHeight("745");
         grid.setEditorEnabled(false);
@@ -71,6 +81,7 @@ public class TabClient {
 
         deleteClient.addClickListener(event -> new EditClientTable().deleteClient(grid));
 
+        //Добавляем на главный слой verticalLayoutClient кнопки и таблицу
         VerticalLayout verticalLayoutClient = new VerticalLayout();
         verticalLayoutClient.addComponent(buttons);
         verticalLayoutClient.setComponentAlignment(buttons, Alignment.TOP_LEFT);

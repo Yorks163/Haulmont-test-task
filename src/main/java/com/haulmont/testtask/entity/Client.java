@@ -1,13 +1,18 @@
 package com.haulmont.testtask.entity;
 
-
+/**
+ * Класс описывает сущность клиента
+ * POJO class
+ *
+ * @author Shakirov Anton
+ */
 public class Client {
 
     private String surname;
     private String firstName;
     private String patronymic;
     private String number;
-    private long id;
+    private long   id;
 
     public Client(String newSurname, String newFirstName, String newPatronymic, String newNumber){
         this.surname = newSurname;
@@ -17,7 +22,6 @@ public class Client {
     }
 
     public Client(){
-
     }
 
     public Client (Client client){

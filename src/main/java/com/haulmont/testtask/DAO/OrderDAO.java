@@ -1,46 +1,38 @@
 package com.haulmont.testtask.DAO;
 
 import com.haulmont.testtask.entity.Order;
-import com.sun.org.apache.xpath.internal.SourceTree;
 
 import java.sql.*;
 import java.util.*;
 
+/**
+ * Класс осуществляет работу с таблицой Заказов в БД
+ *
+ * @author Shakirov Anton
+ */
 public class OrderDAO {
 
+    // Создаем строки с запросами в БД
     static private PreparedStatement preparedStatement;
-    static private String addOrder = "INSERT INTO orders (description, clientID, dataOfCreation, dateOfCompletion, price, status) VALUES (?,?,?,?,?,?)";
+    static private String addOrder    = "INSERT INTO orders (description, clientID, dataOfCreation, dateOfCompletion, price, status) VALUES (?,?,?,?,?,?)";
     static private String deleteOrder = "DELETE FROM orders WHERE id= ?";
     static private String updateOrder = "UPDATE orders SET description = ?, clientID = ?, dataOfCreation = ?, dateOfCompletion = ?, price = ?, status= ? WHERE id = ?";
 
-    static public void seeTable(){
-        try {
-            String query = "SELECT * FROM orders";
-            ResultSet resultSet = Database.statement.executeQuery(query);
-
-            while (resultSet.next()) {
-                System.out.println(resultSet.getLong(1) + " "
-                        + resultSet.getString(2) + " "
-                        + resultSet.getLong(3) + " "
-                        + resultSet.getDate(4) + " "
-                        + resultSet.getDate(5) + " "
-                        + resultSet.getDouble(6) + " "
-                        + resultSet.getString(7));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * Добавление нового заказа в БД
+     * @param order
+     */
     static public void addOrder(Order order){
         try {
             preparedStatement = Database.connection.prepareStatement(addOrder);
+
             preparedStatement.setString(1, order.getDescription());
             preparedStatement.setLong(2, order.getClientID());
             preparedStatement.setDate(3, order.getDataOfCreation());
             preparedStatement.setDate(4, order.getDataOfCompletion());
             preparedStatement.setDouble(5, order.getPrice());
             preparedStatement.setString(6, order.getStatusDescription());
+
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
@@ -48,22 +40,10 @@ public class OrderDAO {
         }
     }
 
-    static public void addOrder(long clientID, String description, java.util.Date dataOfCreation, java.util.Date dataOfCompletion, double price, String statusDescription ){
-        try {
-            preparedStatement = Database.connection.prepareStatement(addOrder);
-            preparedStatement.setString(1, description);
-            preparedStatement.setLong(2, clientID);
-            preparedStatement.setDate(3, new java.sql.Date(dataOfCreation.getTime()));
-            preparedStatement.setDate(4, new java.sql.Date(dataOfCompletion.getTime()));
-            preparedStatement.setDouble(5, price);
-            preparedStatement.setString(6, statusDescription);
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            System.out.println("Database massage: Новый заказ не был добавлен. Введены некорректные данные!");
-        }
-    }
-
+    /**
+     * Удаление заказа из БД по ID
+     * @param id
+     */
     static public void deleteOrder(long id) {
 
         try {
@@ -76,6 +56,10 @@ public class OrderDAO {
         }
     }
 
+    /**
+     * Получение всех объектов из таблицы с заказами
+     * @return
+     */
     static public List<Order> getAllOrder(){
         try {
             String query = "SELECT * FROM orders";
@@ -104,9 +88,14 @@ public class OrderDAO {
         }
     }
 
+    /**
+     * Обновляем заказ в БД
+     * @param order
+     */
     static public void updateOrder (Order order){
         try {
             preparedStatement = Database.connection.prepareStatement(updateOrder);
+
             preparedStatement.setString(1, order.getDescription());
             preparedStatement.setLong(2, order.getClientID());
             preparedStatement.setDate(3, order.getDataOfCreation());

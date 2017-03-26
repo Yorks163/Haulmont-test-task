@@ -22,7 +22,17 @@ import javafx.scene.layout.Pane;
 import java.sql.Date;
 import java.util.List;
 
+/**
+ * Класс отвечает за графическое представление заказов и работу с ними
+ *
+ * @author Shakirov Anton
+ */
 public class TabOrder {
+
+    /**
+     * Метод возвращает главный слой для работы с заказами
+     * @return
+     */
     public VerticalLayout tabOrder(){
 
         //Добавляем кнопки
@@ -31,6 +41,7 @@ public class TabOrder {
         buttons.setHeight("70");
         buttons.setWidth("64.7%");
 
+        //Создаем кнопки редактирования
         Button addOrder = new Button("Добавить");
         addOrder.addStyleName(ValoTheme.BUTTON_LARGE);
         addOrder.addStyleName(ValoTheme.BUTTON_FRIENDLY);
@@ -38,14 +49,17 @@ public class TabOrder {
         Button deleteOrder = new Button("Удалить");
         deleteOrder.setStyleName(ValoTheme.BUTTON_DANGER);
 
+        //Добавляем созданные кнопки на слой для кнопок
         buttons.addComponent(addOrder);
         buttons.setComponentAlignment(addOrder, Alignment.BOTTOM_LEFT);
 
+        //Кнопки редактирования и удаления помещаем в отдельный слой, чтобы они стояли рядом
         HorizontalLayout twoButtons = new HorizontalLayout();
         twoButtons.addComponent(updateOrder);
         twoButtons.addComponent(deleteOrder);
         twoButtons.setSpacing(true);
 
+        //Слой с кнопками создан
         buttons.addComponent(twoButtons);
         buttons.setComponentAlignment(twoButtons, Alignment.BOTTOM_RIGHT);
 
@@ -74,7 +88,7 @@ public class TabOrder {
         }
         Database.closeDatabase();
 
-        //Заполнение таблицы данными из Базы данных
+        //Устанавливаем действия на нажатия кнопок
         addOrder.addClickListener(event -> grid.getUI().getUI().addWindow(new EditOrderTable().addOrder(grid)));
 
         updateOrder.addClickListener(event -> {
@@ -85,35 +99,31 @@ public class TabOrder {
 
         deleteOrder.addClickListener(event -> new EditOrderTable().deleteOrder(grid));
 
-
+        //Создаем форму с фильтром по заказам
         FormLayout filter = new FormLayout();
         filter.addComponent(new EditOrderTable().filter(grid));
 
-
+        //Создаем верхний слой с кнопками
         HorizontalLayout horizontalLayoutTop = new HorizontalLayout();
         horizontalLayoutTop.addComponent(buttons);
         horizontalLayoutTop.setComponentAlignment(buttons, Alignment.TOP_LEFT);
         horizontalLayoutTop.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
 
-        HorizontalLayout horizontalLayoutBottom = new HorizontalLayout();
-        horizontalLayoutBottom.setSpacing(true);
-        horizontalLayoutBottom.setWidth(130.0f, Sizeable.Unit.PERCENTAGE);
-        horizontalLayoutBottom.addComponent(grid);
-        horizontalLayoutBottom.setComponentAlignment(grid, Alignment.TOP_LEFT);
 
 
-
-
+        //Надпись для формы с описанием заказа
         Label textDescription = new Label("Полное описание заказа");
         textDescription.setStyleName(ValoTheme.LABEL_H3);
         textDescription.setWidth("250");
 
+        //Содержание полного текста описания заказа
         TextArea fullDescription = new TextArea();
         fullDescription.setEnabled(false);
         fullDescription.setWidth("300");
         fullDescription.setHeightUndefined();
         fullDescription.setStyleName(ValoTheme.TEXTAREA_LARGE);
 
+        //Главная форма для отображения полного текста описания заказа
         FormLayout descriptionLayout = new FormLayout();
         descriptionLayout.addStyleName(ValoTheme.TABLE_BORDERLESS);
         descriptionLayout.setWidth("300");
@@ -124,18 +134,22 @@ public class TabOrder {
         descriptionLayout.setComponentAlignment(fullDescription, Alignment.TOP_LEFT);
 
 
+        //Слой с фильтром по заказам и отображением полного текста описания
         VerticalLayout filterAndDescription = new VerticalLayout();
+        filterAndDescription.setWidth("400");
+
         filterAndDescription.addComponent(filter);
         filterAndDescription.addComponent(descriptionLayout);
-        filterAndDescription.setWidth("400");
-       // filterAndDescription.setComponentAlignment(filter, Alignment.TOP_LEFT);
         filterAndDescription.setComponentAlignment(descriptionLayout, Alignment.TOP_CENTER);
 
+        //Создаем нижний слой с таблицей, фильтром и формой, содержашей полный текст описания заказа
+        HorizontalLayout horizontalLayoutBottom = new HorizontalLayout();
+        horizontalLayoutBottom.setSpacing(true);
+        horizontalLayoutBottom.setWidth(130.0f, Sizeable.Unit.PERCENTAGE);
 
-
+        horizontalLayoutBottom.addComponent(grid);
+        horizontalLayoutBottom.setComponentAlignment(grid, Alignment.TOP_LEFT);
         horizontalLayoutBottom.addComponent(filterAndDescription);
-        //horizontalLayoutBottom.setComponentAlignment(filterAndDescription, Alignment.TOP_LEFT);
-
 
         //Показываем полное описание заказа при выделении строки
         grid.addSelectionListener(new SelectionEvent.SelectionListener() {
@@ -153,9 +167,11 @@ public class TabOrder {
             }
         });
 
+        //Создаем главный слой для работы с заказами
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setHeightUndefined();
         verticalLayout.setSpacing(true);
+
         verticalLayout.addComponent(horizontalLayoutTop);
         verticalLayout.addComponent(horizontalLayoutBottom);
 

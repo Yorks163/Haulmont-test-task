@@ -2,14 +2,20 @@ package com.haulmont.testtask.entity;
 
 import java.sql.Date;
 
+/**
+ * Класс описывает сущность заказа
+ * POJO class
+ *
+ * @author Shakirov Anton
+ */
 public class Order {
 
-    private long id;
-    private String description;
-    private long clientID;
-    private Date dataOfCreation;
-    private Date dataOfCompletion;
-    private double price;
+    private long              id;
+    private String            description;
+    private long              clientID;
+    private Date              dataOfCreation;
+    private Date              dataOfCompletion;
+    private double            price;
     private StatusDescription statusDescription;
     private enum StatusDescription {Запланирован, Выполнен, Принят_клиентом}
 
@@ -47,7 +53,6 @@ public class Order {
     public Order(){
     }
 
-
     public long getId() {
         return id;
     }
@@ -77,7 +82,6 @@ public class Order {
          else return this.statusDescription.toString();
 
     }
-
 
     public void setId(long id) {
         this.id = id;

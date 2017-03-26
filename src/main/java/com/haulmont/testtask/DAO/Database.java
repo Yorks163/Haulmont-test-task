@@ -5,11 +5,19 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Класс отвечает за соединение с БД
+ *
+ * @author Shakirov Anton
+ */
 public class Database {
 
     public static Connection connection;
     public static Statement  statement;
 
+    /**
+     * Подключение к БД
+     */
     static public void startDatabase(){
         try {
             Class.forName("org.hsqldb.jdbcDriver");
@@ -32,6 +40,9 @@ public class Database {
         }
     }
 
+    /**
+     * Отключение от БД
+     */
    static  public void closeDatabase(){
         try {
             String query = "SHUTDOWN";
