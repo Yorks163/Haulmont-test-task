@@ -87,33 +87,6 @@ public class TabOrder {
         }
         Database.closeDatabase();
 
-        //Устанавливаем действия на нажатия кнопок
-        addOrder.addClickListener(event -> grid.getUI().getUI().addWindow(new EditOrderTable().addOrder(grid)));
-
-        updateOrder.addClickListener(event -> {
-            //Проверка, что изменяем выделенную строку
-            if (grid.getSelectedRow() != null)
-                grid.getUI().getUI().addWindow(new EditOrderTable().updateOrder(grid));
-        });
-
-        deleteOrder.addClickListener(event -> new EditOrderTable().deleteOrder(grid));
-
-        //Создаем форму с фильтром по заказам
-        FormLayout filter = new FormLayout();
-        filter.addComponent(new EditOrderTable().filter(grid));
-
-        //Создаем верхний слой с кнопками
-        HorizontalLayout horizontalLayoutTop = new HorizontalLayout();
-        horizontalLayoutTop.addComponent(buttons);
-        horizontalLayoutTop.setComponentAlignment(buttons, Alignment.TOP_LEFT);
-        horizontalLayoutTop.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
-
-
-
-        //Надпись для формы с описанием заказа
-        Label textDescription = new Label("Полное описание заказа");
-        textDescription.setStyleName(ValoTheme.LABEL_H3);
-        textDescription.setWidth("250");
 
         //Содержание полного текста описания заказа
         TextArea fullDescription = new TextArea();
@@ -122,16 +95,6 @@ public class TabOrder {
         fullDescription.setHeight("40");
         fullDescription.setStyleName(ValoTheme.TEXTAREA_LARGE);
         fullDescription.setVisible(false);
-
-
-        //Создаем нижний слой с таблицей и фильтром
-        HorizontalLayout horizontalLayoutBottom = new HorizontalLayout();
-        horizontalLayoutBottom.setSpacing(true);
-        horizontalLayoutBottom.setWidth(130.0f, Sizeable.Unit.PERCENTAGE);
-        horizontalLayoutBottom.setHeight("100%");
-        horizontalLayoutBottom.addComponent(grid);
-        horizontalLayoutBottom.setComponentAlignment(grid, Alignment.TOP_LEFT);
-        horizontalLayoutBottom.addComponent(filter);
 
         //Показываем полное описание заказа при выделении строки
         grid.addSelectionListener(new SelectionEvent.SelectionListener() {
@@ -148,6 +111,38 @@ public class TabOrder {
                 fullDescription.setVisible(false);
             }
         });
+
+
+        //Устанавливаем действия на нажатия кнопок
+        addOrder.addClickListener(event -> grid.getUI().getUI().addWindow(new EditOrderTable().addOrder(grid, fullDescription)));
+
+        updateOrder.addClickListener(event -> {
+            //Проверка, что изменяем выделенную строку
+            if (grid.getSelectedRow() != null)
+                grid.getUI().getUI().addWindow(new EditOrderTable().updateOrder(grid, fullDescription));
+        });
+
+        deleteOrder.addClickListener(event -> new EditOrderTable().deleteOrder(grid));
+
+        //Создаем форму с фильтром по заказам
+        FormLayout filter = new FormLayout();
+        filter.addComponent(new EditOrderTable().filter(grid));
+
+        //Создаем верхний слой с кнопками
+        HorizontalLayout horizontalLayoutTop = new HorizontalLayout();
+        horizontalLayoutTop.addComponent(buttons);
+        horizontalLayoutTop.setComponentAlignment(buttons, Alignment.TOP_LEFT);
+        horizontalLayoutTop.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
+
+
+        //Создаем нижний слой с таблицей и фильтром
+        HorizontalLayout horizontalLayoutBottom = new HorizontalLayout();
+        horizontalLayoutBottom.setSpacing(true);
+        horizontalLayoutBottom.setWidth(130.0f, Sizeable.Unit.PERCENTAGE);
+        horizontalLayoutBottom.setHeight("100%");
+        horizontalLayoutBottom.addComponent(grid);
+        horizontalLayoutBottom.setComponentAlignment(grid, Alignment.TOP_LEFT);
+        horizontalLayoutBottom.addComponent(filter);
 
         //Создаем главный слой для работы с заказами
         VerticalLayout verticalLayout = new VerticalLayout();

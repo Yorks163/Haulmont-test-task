@@ -31,7 +31,7 @@ public class EditOrderTable {
     /**
      * Метод создает окно для добавления нового заказа
      */
-    public Window addOrder(Grid grid) {
+    public Window addOrder(Grid grid, TextArea fullDescription) {
 
         //Создаем главное окно
         final Window window = new Window("Добавление нового заказа");
@@ -156,6 +156,12 @@ public class EditOrderTable {
                 grid.addRow(orders.get(size-1).getId(), orders.get(size-1).getDescription(), orders.get(size-1).getClientID(), orders.get(size-1).getDataOfCreation().toString(),
                             orders.get(size-1).getDataOfCompletion().toString(), orders.get(size-1).getPrice(), orders.get(size-1).getStatusDescription());
                 Database.closeDatabase();
+
+                //Смотрим на изменения для поля с полным текстом описания
+                if (description.getValue().length() > grid.getColumn("Описание").getWidth() / 10) {
+                    fullDescription.setValue("Полное описание заказа: " + grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").getValue().toString());
+                    fullDescription.setVisible(true);
+                } else fullDescription.setVisible(false);
                 window.close();
 
             } catch (Validator.InvalidValueException e) {
@@ -187,7 +193,7 @@ public class EditOrderTable {
     /**
      * Метод создает окно для изменения выбранного заказа
      */
-    public Window updateOrder(Grid grid) {
+    public Window updateOrder(Grid grid, TextArea fullDescription) {
 
         //Создаем главное окно
         final Window window = new Window("Изменение заказа");
@@ -323,7 +329,7 @@ public class EditOrderTable {
                 Database.startDatabase();
                 Long id = (Long) grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID").getValue();
                 Order order = new Order(description.getValue().trim(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
-                        new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue().replace(',', '.')), status.getValue().toString());
+                                        new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue().replace(',', '.')), status.getValue().toString());
                 order.setId(id);
                 OrderDAO.updateOrder(order);
                 Database.closeDatabase();
@@ -335,6 +341,12 @@ public class EditOrderTable {
                 grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Стоимость").setValue(Double.parseDouble(price.getValue().replace(',', '.')));
                 grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Статус").setValue(status.getValue());
 
+                //Смотрим на изменения для поля с полным текстом описания
+                if (description.getValue().length() > grid.getColumn("Описание").getWidth() / 10) {
+                    fullDescription.setValue("Полное описание заказа: " + grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").getValue().toString());
+                    fullDescription.setVisible(true);
+                } else fullDescription.setVisible(false);
+
                 window.close();
             } catch (Validator.InvalidValueException e) {
                 //Если данные введены некорректно
@@ -342,7 +354,9 @@ public class EditOrderTable {
             }
          });
 
-        cancel.addClickListener(clickEvent -> window.close());
+        cancel.addClickListener(clickEvent -> {
+            window.close();
+        });
 
         //Добавляем формы и кнопки на главный слой
         addOrder.addComponent(description);
