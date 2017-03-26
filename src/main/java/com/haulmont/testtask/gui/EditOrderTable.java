@@ -16,12 +16,10 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
 
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 
 public class EditOrderTable {
 
@@ -48,8 +46,9 @@ public class EditOrderTable {
         dataOfCreation.setValue(date);
         dataOfCreation.setSizeFull();
         dataOfCreation.setRequired(true);
-        dataOfCreation.addValidator(new DateRangeValidator("Заказ должен быть принят не более одного месяца назад и не позднее сегодняшнего дня", new Date(date.getYear(), date.getMonth()-1, date.getDate()+1),
-                                                            new java.sql.Date(date.getTime()), Resolution.YEAR));
+        dataOfCreation.addValidator(new DateRangeValidator("Заказ должен быть принят не более одного месяца назад и не позднее сегодняшнего дня",
+                                    new Date(date.getYear(), date.getMonth()-1, date.getDate()),
+                                    new java.sql.Date(date.getTime()), Resolution.YEAR));
 
 
         final DateField dataOfCompletion = new DateField("Дата окончания");
@@ -66,7 +65,7 @@ public class EditOrderTable {
                 dataOfCompletion.removeAllValidators();
                 Date updateDateOfCreation = dataOfCreation.getValue();
                 dataOfCompletion.addValidator(new DateRangeValidator("Заказ может быть завершен не раньше дня создания заказа и не позднее трех месяцев с текущего дня",
-                                                                    new Date(updateDateOfCreation.getYear(), updateDateOfCreation.getMonth(), updateDateOfCreation.getDate()-1),
+                                                                    new Date(updateDateOfCreation.getYear(), updateDateOfCreation.getMonth(), updateDateOfCreation.getDate()),
                                                                     new Date(date.getYear(), date.getMonth()+3, date.getDate()), Resolution.YEAR));
             } catch (NullPointerException e) {
             }
@@ -111,6 +110,7 @@ public class EditOrderTable {
         HorizontalLayout buttons = new HorizontalLayout();
         buttons.addComponent(saveOrder);
         buttons.addComponent(cancel);
+        buttons.setSpacing(true);
 
         //Действия при нажатии на кнопки
         saveOrder.addClickListener(clickEvent -> {
@@ -140,6 +140,7 @@ public class EditOrderTable {
                 clientID.setRequiredError("Укажите клиента, для которого выполняется заказ");
                 price.setRequiredError("Введите стоимость заказа");
                 status.setRequiredError("Укажите статус заказа");
+                Notification.show("Заполните данные", Notification.TYPE_WARNING_MESSAGE);
             }
         });
 
@@ -178,32 +179,55 @@ public class EditOrderTable {
         description.setRequiredError("Опишите выполняемую работу");
         description.setMaxLength(500);
 
-        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+
+        SimpleDateFormat dateFotmat = new SimpleDateFormat("yyyy-MM-dd");
 
         final DateField dataOfCreation = new DateField("Дата создания");
+        Date date =  new Date();
         try {
-            dataOfCreation.setValue(date.parse(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата создания").getValue().toString()));
+            dataOfCreation.setValue(dateFotmat.parse(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата создания").getValue().toString()));
         } catch(Exception e) {
             System.out.println("Order Table: Ошибка в считывании Даты создания");
         }
         dataOfCreation.setSizeFull();
         dataOfCreation.setRequired(true);
-        dataOfCreation.setRequiredError("Необходимо указать дату создания заказа");
+
 
         final DateField dataOfCompletion = new DateField("Дата окончания");
         try {
-            dataOfCompletion.setValue(date.parse(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата окончания работ").getValue().toString()));
+            dataOfCompletion.setValue(dateFotmat.parse(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата окончания работ").getValue().toString()));
         } catch(Exception e) {
             System.out.println("Order Table: Ошибка в считывании Даты окончания работ");
         }
         dataOfCompletion.setSizeFull();
         dataOfCompletion.setRequired(true);
         dataOfCreation.setRequiredError("Необходимо указать дату завершения работ");
+        dataOfCompletion.addValidator(new DateRangeValidator("Заказ может быть завершен не раньше дня создания заказа и не позднее трех месяцев с текущего дня",
+                                      new Date(dataOfCreation.getValue().getTime()), new Date(date.getYear(), date.getMonth()+3, date.getDate()), Resolution.YEAR));
+        //Обновляем валидатор при изменении даты создания заказа
+        dataOfCreation.addValueChangeListener(event -> {
+            //Если изменяем дату, то ее нельзя ставить позде 1 месяца от текущего дня
+            dataOfCreation.setRequiredError("Необходимо указать дату создания заказа");
+            dataOfCreation.addValidator(new DateRangeValidator("Заказ должен быть принят не более одного месяца назад и не позднее сегодняшнего дня",
+                    new Date(date.getYear(), date.getMonth()-1, date.getDate()),
+                    new java.sql.Date(date.getTime()), Resolution.YEAR));
+            //Если дата создания введена некорректно
+            try {
+                dataOfCompletion.removeAllValidators();
+                Date updateDateOfCreation = dataOfCreation.getValue();
+                dataOfCompletion.addValidator(new DateRangeValidator("Заказ может быть завершен не раньше дня создания заказа и не позднее трех месяцев с текущего дня!",
+                        new Date(updateDateOfCreation.getYear(), updateDateOfCreation.getMonth(), updateDateOfCreation.getDate()),
+                        new Date(date.getYear(), date.getMonth()+3, date.getDate()), Resolution.YEAR));
+            } catch (NullPointerException e) {
+            }
+        } );
 
         final TextField price = new TextField("Стоимость",  grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Стоимость").getValue().toString());
         price.setSizeFull();
         price.setRequired(true);
         price.setRequiredError("укажите стоимость");
+        //Стоимость возможно ввести как с разделителем ',' между целой и дробной частью, так и с '.'
+        price.addValidator(new RegexpValidator("[0-9]{1,6}(\\.?\\,?[0-9]{1,2}){0,1}", true, "Стоимость не может быть отрицательной или быть равной 1 000 000 и более"));
 
         //Панель выбора клиента из существующих
         List<Long> allClientID = new ArrayList();
@@ -229,35 +253,49 @@ public class EditOrderTable {
         status.setValue(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Статус").getValue().toString());
         status.setNullSelectionAllowed(false);
         status.setRequired(false);
+
+
         final Button updateOrder = new Button("Изменить");
+        updateOrder.setStyleName(ValoTheme.BUTTON_FRIENDLY);
         final Button cancel = new Button("Отмена");
 
         HorizontalLayout buttons = new HorizontalLayout();
         buttons.addComponent(updateOrder);
         buttons.addComponent(cancel);
+        buttons.setSpacing(true);
 
         //Действия при нажатии на кнопки
         updateOrder.addClickListener(clickEvent -> {
-            Database.startDatabase();
-            Long id = (Long) grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID").getValue();
-            Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
-                                    new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue()), status.getValue().toString());
-            order.setId(id);
-            OrderDAO.updateOrder(order);
-            Database.closeDatabase();
+            try {
+                description.validate();
+                clientID.validate();
+                dataOfCreation.validate();
+                dataOfCompletion.validate();
+                price.validate();
+                status.validate();
 
-            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").setValue(description.getValue());
-            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID Клиента").setValue(clientID.getValue());
-            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата создания").setValue(new java.sql.Date(dataOfCreation.getValue().getTime()).toString());
-            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата окончания работ").setValue(new java.sql.Date(dataOfCompletion.getValue().getTime()).toString());
-            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Стоимость").setValue(Double.parseDouble(price.getValue()));
-            grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Статус").setValue(status.getValue());
+                Database.startDatabase();
+                Long id = (Long) grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID").getValue();
+                Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
+                        new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue().replace(',', '.')), status.getValue().toString());
+                order.setId(id);
+                OrderDAO.updateOrder(order);
+                Database.closeDatabase();
 
-            window.close();
-        });
+                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").setValue(description.getValue());
+                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID Клиента").setValue(clientID.getValue());
+                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата создания").setValue(new java.sql.Date(dataOfCreation.getValue().getTime()).toString());
+                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Дата окончания работ").setValue(new java.sql.Date(dataOfCompletion.getValue().getTime()).toString());
+                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Стоимость").setValue(Double.parseDouble(price.getValue().replace(',', '.')));
+                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Статус").setValue(status.getValue());
+
+                window.close();
+            } catch (Validator.InvalidValueException e) {
+                Notification.show("Заполните данные", Notification.TYPE_WARNING_MESSAGE);
+            }
+         });
 
         cancel.addClickListener(clickEvent -> window.close());
-
 
         addOrder.addComponent(description);
         addOrder.addComponent(clientID);
@@ -293,13 +331,14 @@ public class EditOrderTable {
         textFilter.setStyleName(ValoTheme.LABEL_H3);
         filterLayout.addComponent(textFilter);
         filterLayout.setComponentAlignment(textFilter, Alignment.TOP_LEFT);
+        filterLayout.setWidth("295");
 
         TextField clientID = new TextField("ID Клиента", "");
-        clientID.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
+        clientID.setWidth("200");
         TextField status = new TextField("Статус", "");
-        status.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
+        status.setWidth("200");
         TextField description = new TextField("Описание", "");
-        description.setWidth(000.0f, Sizeable.Unit.PERCENTAGE);
+        description.setWidth("200");
         description.setMaxLength(500);
         Button apply = new Button("Применить");
 

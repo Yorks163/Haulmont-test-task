@@ -55,6 +55,7 @@ public class EditClientTable {
 
         final Button saveClient = new Button("Добавить");
         saveClient.setStyleName(ValoTheme.BUTTON_FRIENDLY);
+
         saveClient.addClickListener(clickEvent -> {
 
             //Если поля не пустые, добавляем нового клиента
@@ -76,6 +77,7 @@ public class EditClientTable {
                 surname.setRequiredError("Введите фамилию");
                 firstName.setRequiredError("Введите имя");
                 number.setRequiredError("Укажите телефон");
+                Notification.show("Заполните данные", Notification.TYPE_WARNING_MESSAGE);
             }
         });
         final Button cancel = new Button("Отмена");
@@ -84,6 +86,7 @@ public class EditClientTable {
         HorizontalLayout buttons = new HorizontalLayout();
         buttons.addComponent(saveClient);
         buttons.addComponent(cancel);
+        buttons.setSpacing(true);
 
 
         addClient.addComponent(surname);
@@ -156,6 +159,7 @@ public class EditClientTable {
                 grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Номер телефона").setValue(number.getValue());
                 window.close();
             } catch (Validator.InvalidValueException e) {
+                Notification.show("Заполните данные", Notification.TYPE_WARNING_MESSAGE);
             }
         });
 
@@ -165,6 +169,7 @@ public class EditClientTable {
         HorizontalLayout buttons = new HorizontalLayout();
         buttons.addComponent(saveClient);
         buttons.addComponent(cancel);
+        buttons.setSpacing(true);
 
 
         addClient.addComponent(surname);

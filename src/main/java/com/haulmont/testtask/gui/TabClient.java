@@ -4,13 +4,9 @@ import com.haulmont.testtask.DAO.ClientDAO;
 import com.haulmont.testtask.DAO.Database;
 import com.haulmont.testtask.entity.Client;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Sizeable;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
-import java.nio.file.Path;
 import java.util.List;
 
 public class TabClient {
@@ -21,10 +17,9 @@ public class TabClient {
         HorizontalLayout buttons = new HorizontalLayout();
         buttons.setSpacing(true);
         buttons.setHeight("70");
-        buttons.setWidth("1180");
+        buttons.setWidth("64.7%");
 
         Button addClient = new Button("Добавить");
-        addClient.setIcon(VaadinIcons.USER_CHECK);
         addClient.addStyleName(ValoTheme.BUTTON_FRIENDLY);
         addClient.addStyleName(ValoTheme.BUTTON_LARGE);
         Button updateClient = new Button("Изменить");
@@ -44,14 +39,14 @@ public class TabClient {
 
         //Создаем таблицу
         Grid grid = new Grid();
-        grid.addColumn("ID", Long.class).setWidth(80);
+        grid.addColumn("ID", Long.class).setWidth(60);
         grid.addColumn("Фамилия", String.class);
         grid.addColumn("Имя", String.class);
         grid.addColumn("Отчество", String.class);
         grid.addColumn("Номер телефона", String.class);
         //grid.setCaption("Список клиентов");
-        grid.setWidth("1280");
-        grid.setHeight(1000, Sizeable.Unit.PERCENTAGE);
+        grid.setWidth("64.7%");
+        grid.setHeight("745");
         grid.setEditorEnabled(false);
         grid.setStyleName(ValoTheme.TABLE_BORDERLESS);
 
@@ -80,7 +75,7 @@ public class TabClient {
         verticalLayoutClient.addComponent(buttons);
         verticalLayoutClient.setComponentAlignment(buttons, Alignment.TOP_LEFT);
         verticalLayoutClient.addComponent(grid);
-        verticalLayoutClient.setComponentAlignment(grid, Alignment.TOP_LEFT);
+        verticalLayoutClient.setComponentAlignment(grid, Alignment.MIDDLE_LEFT);
         verticalLayoutClient.setSpacing(true);
         verticalLayoutClient.setSizeFull();
 
