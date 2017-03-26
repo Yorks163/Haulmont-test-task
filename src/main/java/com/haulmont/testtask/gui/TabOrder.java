@@ -73,8 +73,7 @@ public class TabOrder {
         grid.addColumn("Дата окончания работ", String.class);
         grid.addColumn("Стоимость", Double.class);
         grid.addColumn("Статус", String.class);
-        grid.setWidth("100%");
-        grid.setHeight("745");
+        grid.setSizeFull();
         grid.setEditorEnabled(false);
         grid.setStyleName(ValoTheme.TABLE_BORDERLESS);
 
@@ -119,37 +118,20 @@ public class TabOrder {
         //Содержание полного текста описания заказа
         TextArea fullDescription = new TextArea();
         fullDescription.setEnabled(false);
-        fullDescription.setWidth("300");
-        fullDescription.setHeightUndefined();
+        fullDescription.setWidth("64.7%");
+        fullDescription.setHeight("40");
         fullDescription.setStyleName(ValoTheme.TEXTAREA_LARGE);
-
-        //Главная форма для отображения полного текста описания заказа
-        FormLayout descriptionLayout = new FormLayout();
-        descriptionLayout.addStyleName(ValoTheme.TABLE_BORDERLESS);
-        descriptionLayout.setWidth("300");
-        descriptionLayout.setVisible(false);
-
-        descriptionLayout.addComponent(textDescription);
-        descriptionLayout.addComponent(fullDescription);
-        descriptionLayout.setComponentAlignment(fullDescription, Alignment.TOP_LEFT);
+        fullDescription.setVisible(false);
 
 
-        //Слой с фильтром по заказам и отображением полного текста описания
-        VerticalLayout filterAndDescription = new VerticalLayout();
-        filterAndDescription.setWidth("400");
-
-        filterAndDescription.addComponent(filter);
-        filterAndDescription.addComponent(descriptionLayout);
-        filterAndDescription.setComponentAlignment(descriptionLayout, Alignment.TOP_CENTER);
-
-        //Создаем нижний слой с таблицей, фильтром и формой, содержашей полный текст описания заказа
+        //Создаем нижний слой с таблицей и фильтром
         HorizontalLayout horizontalLayoutBottom = new HorizontalLayout();
         horizontalLayoutBottom.setSpacing(true);
         horizontalLayoutBottom.setWidth(130.0f, Sizeable.Unit.PERCENTAGE);
-
+        horizontalLayoutBottom.setHeight("100%");
         horizontalLayoutBottom.addComponent(grid);
         horizontalLayoutBottom.setComponentAlignment(grid, Alignment.TOP_LEFT);
-        horizontalLayoutBottom.addComponent(filterAndDescription);
+        horizontalLayoutBottom.addComponent(filter);
 
         //Показываем полное описание заказа при выделении строки
         grid.addSelectionListener(new SelectionEvent.SelectionListener() {
@@ -159,11 +141,11 @@ public class TabOrder {
                 //Если выбрана строка и описание не помещается в колонку, то выводим отдельную надпись с полным описанием
                 if (grid.isSelected(grid.getSelectedRow()))
                     if (grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").getValue().toString().length() > grid.getColumn("Описание").getWidth() / 10) {
-                        fullDescription.setValue(grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").getValue().toString());
-                        descriptionLayout.setVisible(true);
+                        fullDescription.setValue("Полное описание заказа: " + grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Описание").getValue().toString());
+                        fullDescription.setVisible(true);
                         return;
                     }
-                descriptionLayout.setVisible(false);
+                fullDescription.setVisible(false);
             }
         });
 
@@ -174,6 +156,7 @@ public class TabOrder {
 
         verticalLayout.addComponent(horizontalLayoutTop);
         verticalLayout.addComponent(horizontalLayoutBottom);
+        verticalLayout.addComponent(fullDescription);
 
         return  verticalLayout;
     }

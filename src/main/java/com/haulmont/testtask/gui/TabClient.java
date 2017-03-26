@@ -56,7 +56,7 @@ public class TabClient {
         grid.addColumn("Отчество", String.class);
         grid.addColumn("Номер телефона", String.class);
         grid.setWidth("64.7%");
-        grid.setHeight("745");
+        grid.setHeight("100%");
         grid.setEditorEnabled(false);
         grid.setStyleName(ValoTheme.TABLE_BORDERLESS);
 
@@ -83,6 +83,7 @@ public class TabClient {
 
         //Добавляем на главный слой verticalLayoutClient кнопки и таблицу
         VerticalLayout verticalLayoutClient = new VerticalLayout();
+        verticalLayoutClient.setHeight("100%");
         verticalLayoutClient.addComponent(buttons);
         verticalLayoutClient.setComponentAlignment(buttons, Alignment.TOP_LEFT);
         verticalLayoutClient.addComponent(grid);

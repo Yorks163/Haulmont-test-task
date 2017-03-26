@@ -5,6 +5,7 @@ import com.haulmont.testtask.DAO.Database;
 
 import com.haulmont.testtask.entity.Client;
 import com.vaadin.data.Validator;
+import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Window;
@@ -48,23 +49,27 @@ public class EditClientTable {
         surname.setRequired(true);
         surname.setMaxLength(50);
         surname.setNullSettingAllowed(true);
+        surname.addValidator(new RegexpValidator("[' 'а-яА-Яa-z-A-Z]{1,50}", true, "Данные введены некорректно"));
 
         //Текстовое поле ввода имени
         final TextField firstName = new TextField("Имя", "");
         firstName.setSizeFull();
         firstName.setRequired(true);
         firstName.setMaxLength(50);
+        firstName.addValidator(new RegexpValidator("[' 'а-яА-Яa-z-A-Z]{1,50}", true, "Данные введены некорректно"));
 
         //Текстовое поле ввода фамилии
         final TextField patronymic = new TextField("Отчество", "");
         patronymic.setSizeFull();
         patronymic.setMaxLength(50);
+        patronymic.addValidator(new RegexpValidator("[' 'а-яА-Яa-z-A-Z]{0,50}", true, "Данные введены некорректно"));
 
         //Текстовое поле ввода номера телефона
         final TextField number = new TextField("Номер телефона", "");
         number.setSizeFull();
         number.setRequired(true);
         number.setMaxLength(50);
+        number.addValidator(new RegexpValidator("[' '\\-()0-9]{1,50}", true, "Данные введены некорректно"));
 
         //Создание кнопки Добававить клиента
         final Button saveClient = new Button("Добавить");
@@ -81,7 +86,7 @@ public class EditClientTable {
 
                 //Добавляем запись в БД
                 Database.startDatabase();
-                Client client = new Client(surname.getValue(), firstName.getValue(), patronymic.getValue(), number.getValue() );
+                Client client = new Client(surname.getValue().trim(), firstName.getValue().trim(), patronymic.getValue().trim(), number.getValue().trim() );
                 ClientDAO.addClient(client);
                 List<Client> clients = ClientDAO.getAllClient();
 
@@ -149,6 +154,7 @@ public class EditClientTable {
         surname.setRequired(true);
         surname.setRequiredError("Введите фамилию");
         surname.setNullSettingAllowed(true);
+        surname.addValidator(new RegexpValidator("[' 'а-яА-Яa-z-A-Z]{1,50}", true, "Данные введены некорректно"));
 
         //Поле изменения имени
         final TextField firstName = new TextField("Имя", grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Имя").getValue().toString());
@@ -156,11 +162,13 @@ public class EditClientTable {
         firstName.setRequired(true);
         firstName.setRequiredError("Введите имя");
         firstName.setMaxLength(50);
+        firstName.addValidator(new RegexpValidator("[' 'а-яА-Яa-z-A-Z]{1,50}", true, "Данные введены некорректно"));
 
         //Поле изменения отчества. Отчество указывать не обязательно
         final TextField patronymic = new TextField("Отчество", grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Отчество").getValue().toString());
         patronymic.setSizeFull();
         patronymic.setMaxLength(50);
+        patronymic.addValidator(new RegexpValidator("[' 'а-яА-Яa-z-A-Z]{0,50}", true, "Данные введены некорректно"));
 
         //Поле изменения номера
         final TextField number = new TextField("Номер телефона", grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Номер телефона").getValue().toString());
@@ -168,6 +176,7 @@ public class EditClientTable {
         number.setRequired(true);
         number.setRequiredError("Укажите телефон");
         number.setMaxLength(50);
+        number.addValidator(new RegexpValidator("[' '\\-()0-9]{1,50}", true, "Данные введены некорректно"));
 
         //Создаем кнопку Применить и назначаем дейчтвия при нажатии
         final Button saveClient = new Button("Применить");
@@ -182,16 +191,16 @@ public class EditClientTable {
 
                 Database.startDatabase();
                 Long id = (Long) grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID").getValue();
-                Client client = new Client(surname.getValue(), firstName.getValue(), patronymic.getValue(), number.getValue());
+                Client client = new Client(surname.getValue().trim(), firstName.getValue().trim(), patronymic.getValue().trim(), number.getValue().trim());
                 client.setId(id);
                 ClientDAO.updateClient(client);
                 Database.closeDatabase();
 
                 //Перезаписываем данного клиента в таблице
-                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Фамилия").setValue(surname.getValue());
-                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Имя").setValue(firstName.getValue());
-                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Отчество").setValue(patronymic.getValue());
-                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Номер телефона").setValue(number.getValue());
+                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Фамилия").setValue(surname.getValue().trim());
+                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Имя").setValue(firstName.getValue().trim());
+                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Отчество").setValue(patronymic.getValue().trim());
+                grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("Номер телефона").setValue(number.getValue().trim());
                 window.close();
             } catch (Validator.InvalidValueException e) {
                 //Предупреждение, сли хотя бы одно из полей пустое

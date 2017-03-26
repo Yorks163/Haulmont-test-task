@@ -146,7 +146,7 @@ public class EditOrderTable {
 
                 //Если поля не пустые и данные введены корректно, добавляем заказ
                 Database.startDatabase();
-                Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
+                Order order = new Order(description.getValue().trim(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
                                         new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue().replace(',', '.')),
                                         status.getValue().toString() );
                 OrderDAO.addOrder(order);
@@ -322,7 +322,7 @@ public class EditOrderTable {
                 //Если данные введены корректно, изменям запись
                 Database.startDatabase();
                 Long id = (Long) grid.getContainerDataSource().getItem(grid.getSelectedRow()).getItemProperty("ID").getValue();
-                Order order = new Order(description.getValue(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
+                Order order = new Order(description.getValue().trim(), Long.parseLong(clientID.getValue().toString()), new java.sql.Date(dataOfCreation.getValue().getTime()),
                         new java.sql.Date(dataOfCompletion.getValue().getTime()), Double.parseDouble(price.getValue().replace(',', '.')), status.getValue().toString());
                 order.setId(id);
                 OrderDAO.updateOrder(order);
